@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Repositories
+namespace Infrastructure.UnitOfWorks
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
             _context = context;
             NoteBook = noteBookRepository;
             Note = noteRepository;
-            Tag= tagRepository;
+            Tag = tagRepository;
             Todo = todoRepository;
             UserProfile = userProfileRepository;
         }
