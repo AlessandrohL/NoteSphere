@@ -12,7 +12,7 @@ namespace Domain.Abstractions.Repositories
     {
         IQueryable<TEntity> FindAll(bool trackChanges);
         IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges);
-        TEntity FindById(TKey id);
+        //Task<TEntity> FindById(TKey id);
         void Create(TEntity entity);
         void Update(TEntity entity);
         void Delete(TEntity entity);
