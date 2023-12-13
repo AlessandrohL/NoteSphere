@@ -14,6 +14,6 @@ namespace Domain.Abstractions
         ITagRepository Tag { get; }
         ITodoRepository Todo { get; }
         IUserProfileRepository UserProfile { get; }
-        public Task SaveChangesAsync();
+        Task<int> SaveChangesAsync();
     }
 }
