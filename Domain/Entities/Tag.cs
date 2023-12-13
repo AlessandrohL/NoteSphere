@@ -10,7 +10,6 @@ namespace Domain.Entities
 {
     public sealed class Tag : BaseEntity<int>
     {
-        public int Id { get; set; }
         public string? Name { get; set; }
         public ICollection<NoteTag>? NoteTags { get; set; }
     }
