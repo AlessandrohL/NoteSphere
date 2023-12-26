@@ -1,5 +1,5 @@
-﻿using Domain.Abstractions.Repositories;
-using Domain.Common;
+﻿using Domain.Abstractions;
+using Domain.Abstractions.Repositories;
 using Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Infrastructure.Repositories
 {
     public abstract class RepositoryBase<TEntity, TKey> 
-        : IRepositoryBase<TEntity, TKey> where TEntity : BaseEntity<TKey>
+        : IRepositoryBase<TEntity, TKey> where TEntity : class, IBaseEntity<TKey>
     {
         protected readonly ApplicationDbContext _context;
 

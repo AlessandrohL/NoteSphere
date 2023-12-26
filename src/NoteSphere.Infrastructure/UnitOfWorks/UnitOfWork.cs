@@ -13,14 +13,10 @@ namespace Infrastructure.UnitOfWorks
     {
         private readonly ApplicationDbContext _context;
         public INoteBookRepository NoteBook { get; }
-
         public INoteRepository Note { get; }
-
         public ITagRepository Tag { get; }
-
         public ITodoRepository Todo { get; }
-
-        public IUserProfileRepository UserProfile { get; }
+        public IApplicationUserRepository ApplicationUser { get; }
 
 
         public UnitOfWork(ApplicationDbContext context,
@@ -28,17 +24,18 @@ namespace Infrastructure.UnitOfWorks
             INoteRepository noteRepository,
             ITagRepository tagRepository,
             ITodoRepository todoRepository,
-            IUserProfileRepository userProfileRepository)
+            IApplicationUserRepository applicationUserRepository)
         {
             _context = context;
             NoteBook = noteBookRepository;
             Note = noteRepository;
             Tag = tagRepository;
             Todo = todoRepository;
-            UserProfile = userProfileRepository;
+            ApplicationUser = applicationUserRepository;
         }
 
-
+        
         public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
+
     }
 }
