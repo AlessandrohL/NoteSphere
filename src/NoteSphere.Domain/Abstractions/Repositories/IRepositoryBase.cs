@@ -1,5 +1,4 @@
-﻿using Domain.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Abstractions.Repositories
 {
-    public interface IRepositoryBase<TEntity, TKey> where TEntity : BaseEntity<TKey>
+    public interface IRepositoryBase<TEntity, TKey> where TEntity : IBaseEntity<TKey>
     {
         IQueryable<TEntity> FindAll(bool trackChanges);
         IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges);
