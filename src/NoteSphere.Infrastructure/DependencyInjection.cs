@@ -1,7 +1,11 @@
-﻿using Domain.Abstractions;
+﻿using Application.Abstractions;
+using Application.Models.Identity;
+using Domain.Abstractions;
 using Domain.Abstractions.Repositories;
 using Infrastructure.Data.Contexts;
+using Infrastructure.Helpers;
 using Infrastructure.Identity;
+using Infrastructure.Identity.Jwt;
 using Infrastructure.Repositories;
 using Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
@@ -21,28 +25,31 @@ namespace Infrastructure
             (this IServiceCollection services, IConfiguration configuration)
         {
             string connection = configuration.GetConnectionString("DevConnection")
-                ?? throw new InvalidOperationException("Connection string is null.");
+                ?? throw new ArgumentNullException("Connection string is null.");
 
-            // Configure DbContext
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connection));
 
-            // Configure Identity
-            services.AddIdentityCore<User>(options =>
+            services.AddIdentityCore<UserAuth>(options =>
             {
                 options.Password.RequireLowercase = false;
                 options.Password.RequiredLength = 8;
+
+                options.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddSingleton<JwtConfigHelper>();
 
             services.AddScoped<INoteBookRepository, NoteBookRepository>();
             services.AddScoped<INoteRepository, NoteRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<ITodoRepository, TodoRepository>();
-            services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+            services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IJwtService, JwtService>();
+
 
             return services;
         }
