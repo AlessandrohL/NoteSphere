@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\NoteSphere.Application\Application.csproj" />
+    <ProjectReference Include="..\NoteSphere.Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
