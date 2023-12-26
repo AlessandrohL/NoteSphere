@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Abstractions
 {
-    public interface ITimeModification
+    public interface IBaseEntity<TKey>
     {
+        TKey Id { get; set; }
         DateTime CreatedTime { get; set; }
         DateTime? ModifiedTime { get; set; }
     }
