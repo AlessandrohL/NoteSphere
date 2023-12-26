@@ -13,7 +13,7 @@ namespace Domain.Abstractions
         INoteRepository Note { get; }
         ITagRepository Tag { get; }
         ITodoRepository Todo { get; }
-        IUserProfileRepository UserProfile { get; }
+        IApplicationUserRepository ApplicationUser { get; }
         Task<int> SaveChangesAsync();
     }
 }
