@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public sealed class Todo : IBaseEntity<int>
+    public sealed class Todo : BaseEntity
     {
         public int Id { get; set; }
         public string? Title { get; set; }
@@ -16,7 +16,6 @@ namespace Domain.Entities
         public bool IsComplete { get; set; } = false;
         public Guid AppUserId { get; set; }
         public ApplicationUser? ApplicationUser { get; set; }
-        public DateTime CreatedTime { get; set; }
-        public DateTime? ModifiedTime { get; set; }
+
     }
 }

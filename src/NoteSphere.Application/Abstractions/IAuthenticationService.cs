@@ -1,6 +1,6 @@
-﻿using Application.Models.Common;
-using Application.Models.DTOs.Token;
-using Application.Models.DTOs.User;
+﻿using Application.Common;
+using Application.DTOs.Token;
+using Application.DTOs.User;
 using Domain.Abstractions;
 using System;
 using System.Collections.Generic;

@@ -1,10 +1,10 @@
 ﻿using Application.Abstractions;
+using Application.Common;
+using Application.DTOs.Token;
+using Application.DTOs.User;
 using Application.Errors;
-using Application.Models.Common;
-using Application.Models.DTOs.Token;
-using Application.Models.DTOs.User;
-using Application.Models.Helpers;
-using Application.Models.Identity;
+using Application.Helpers;
+using Application.Identity;
 using AutoMapper;
 using Domain.Abstractions;
 using Domain.Entities;
@@ -74,9 +74,10 @@ namespace Application.Services
                 return identityResult.Errors.Select(e => e.Description).ToList();
 
             var appUser = _mapper.Map<ApplicationUser>(userRegistration);
-            appUser.IdentityGuid = identityUser.Id;
+            appUser.AssignIdentity(identityUser.Id);
 
             _unitOfWork.ApplicationUser.Create(appUser);
+
             await _unitOfWork.SaveChangesAsync();
 
             var claims = GenerateClaimsForUser(identityUser.Id, identityUser.UserName!, identityUser.Email!);
@@ -107,15 +108,14 @@ namespace Application.Services
 
             var user = await _userManager.FindByIdAsync(subject.Value);
 
-            if (user is not null && user!.RefreshToken != tokenRefreshRequest.RefreshToken)
-            {
-                return JwtErrorMessages.InvalidRefreshToken;
-            }
+            if (user is null)
+                return AuthErrorMessages.UserNotFound;
 
-            if (user!.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            {
+            if (user.RefreshToken != tokenRefreshRequest.RefreshToken)
+                return JwtErrorMessages.InvalidRefreshToken;
+
+            if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
                 return JwtErrorMessages.RefreshTokenExpired;
-            }
 
             var claims = GenerateClaimsForUser(user.Id, user.UserName!, user.Email!);
             var accessToken = _jwtService.CreateToken(claims);

@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Application.Errors;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Models.DTOs.User
+namespace Application.DTOs.User
 {
     public record UserLoginDto
     {
         [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = AuthErrorMessages.InvalidEmail)]
         public string? Email { get; init; }
 
         [Required(ErrorMessage = "Password is required.")]

@@ -8,11 +8,11 @@ namespace Domain.Abstractions
 {
     public interface IUserWithIdentityFeatures
     { 
-        public string Id { get; set; }
-        public string? RefreshToken { get; set; }
-        public DateTime? RefreshTokenExpiryTime { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
+        string Id { get; set; }
+        string? RefreshToken { get; set; }
+        DateTime? RefreshTokenExpiryTime { get; set; }
+        string? UserName { get; set; }
+        string? Email { get; set; }
+        string? PasswordHash { get; set; }
     }
 }

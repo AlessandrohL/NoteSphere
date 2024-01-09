@@ -18,10 +18,10 @@ namespace Infrastructure.Data.Configurations
             builder.HasKey(p => p.Id);
 
             builder
-                .HasIndex(p => p.IdentityGuid)
+                .HasIndex(p => p.IdentityId)
                 .IsUnique();
 
-            builder.Property(p => p.IdentityGuid)
+            builder.Property(p => p.IdentityId)
                 .IsRequired();
 
             builder.Property(p => p.FirstNames)
@@ -31,8 +31,8 @@ namespace Infrastructure.Data.Configurations
             builder.Property(p => p.LastNames)
                 .HasMaxLength(100);
 
-            builder.Property(p => p.CreatedTime)
-                .HasDefaultValueSql("GETDATE()");
+            builder.Property(p => p.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
 
             builder.HasMany(p => p.Tags)
                 .WithOne(t => t.ApplicationUser)
@@ -42,9 +42,9 @@ namespace Infrastructure.Data.Configurations
                 .WithOne(nb => nb.ApplicationUser)
                 .HasForeignKey(p => p.AppUserId);
 
-            builder.HasMany(p => p.Todos)
-                .WithOne(t => t.ApplicationUser)
-                .HasForeignKey(p => p.AppUserId);
+            //builder.HasMany(p => p.Todos)
+            //    .WithOne(t => t.ApplicationUser)
+            //    .HasForeignKey(p => p.AppUserId);
         }
     }
 }

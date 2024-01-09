@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Models.Helpers
+namespace Application.Helpers
 {
     public static class JwtClaimTypes
     {

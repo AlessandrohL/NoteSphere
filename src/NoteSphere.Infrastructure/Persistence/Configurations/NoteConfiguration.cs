@@ -18,7 +18,7 @@ namespace Infrastructure.Data.Configurations
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.Id)
-                .HasColumnName("NoteId");
+                .HasColumnName("Id");
 
             builder.Property(p => p.Title)
                 .HasMaxLength(60)
@@ -29,8 +29,10 @@ namespace Infrastructure.Data.Configurations
                 .HasColumnType("TEXT")
                 .IsUnicode(true);
 
-            builder.Property(p => p.CreatedTime)
-                .HasDefaultValueSql("GETDATE()");
+            builder.Property(p => p.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            builder.HasQueryFilter(n => !n.IsDeleted);
         }
     }
 }

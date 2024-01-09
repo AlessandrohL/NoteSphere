@@ -19,8 +19,8 @@ namespace Infrastructure.Data.Configurations
                 .HasMaxLength(120)
                 .IsRequired();
 
-            builder.Property(p => p.CreatedTime)
-                .HasDefaultValueSql("GETDATE()");
+            builder.Property(p => p.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
         }
     }
 }

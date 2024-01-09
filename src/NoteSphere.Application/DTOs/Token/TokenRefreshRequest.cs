@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Models.DTOs.Token
+namespace Application.DTOs.Token
 {
     public record TokenRefreshRequest
     {

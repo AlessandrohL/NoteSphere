@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace Application.Abstractions
 {
     public interface IApplicationUserService
     {
+        Task<Result<Guid, string>> GetUserIdByIdentityIdAsync(string identityId);
     }
 }

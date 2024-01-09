@@ -1,4 +1,4 @@
-﻿using Application.Models.Identity;
+﻿using Application.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

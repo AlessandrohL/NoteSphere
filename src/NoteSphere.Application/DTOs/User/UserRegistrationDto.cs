@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Models.DTOs.User
+namespace Application.DTOs.User
 {
     public record UserRegistrationDto
     {
@@ -15,7 +15,7 @@ namespace Application.Models.DTOs.User
 
         [MaxLength(100, ErrorMessage = "Last names cannot exceed 100 characters.")]
         public string? LastNames { get; init; }
-        
+
         [Required(ErrorMessage = "Username is required.")]
         public string? UserName { get; init; }
 

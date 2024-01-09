@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions;
-using Application.Models.Identity;
+using Application.Identity;
 using Domain.Abstractions;
 using Domain.Abstractions.Repositories;
 using Infrastructure.Data.Contexts;

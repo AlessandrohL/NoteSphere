@@ -1,5 +1,7 @@
-﻿using Application.Models.DTOs.User;
-using Application.Models.Identity;
+﻿using Application.DTOs.NoteBook;
+using Application.DTOs.Notes;
+using Application.DTOs.User;
+using Application.Identity;
 using AutoMapper;
 using Domain.Abstractions;
 using Domain.Entities;
@@ -9,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Models.Mapper
+namespace Application.Mapper
 {
     public class MappingProfile : Profile
     {
@@ -18,6 +20,14 @@ namespace Application.Models.Mapper
             CreateMap<UserRegistrationDto, UserAuth>();
             CreateMap<UserRegistrationDto, ApplicationUser>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            CreateMap<NoteBook, NoteBookDto>();
+
+            CreateMap<CreateNoteBookDto, NoteBook>();
+
+            CreateMap<UpdateNotebookDto, NoteBook>();
+
+            CreateMap<Note, NoteDto>();
         }
     }
 }

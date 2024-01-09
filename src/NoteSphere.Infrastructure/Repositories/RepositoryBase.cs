@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Infrastructure.Repositories
 {
     public abstract class RepositoryBase<TEntity, TKey> 
-        : IRepositoryBase<TEntity, TKey> where TEntity : class, IBaseEntity<TKey>
+        : IRepositoryBase<TEntity, TKey> where TEntity : BaseEntity
     {
         protected readonly ApplicationDbContext _context;
 
@@ -21,20 +21,14 @@ namespace Infrastructure.Repositories
             _context = context ?? throw new ArgumentNullException($"{nameof(context)} is null");
         }
 
-
-        public IQueryable<TEntity> FindAll(bool trackChanges) => !trackChanges
-            ? _context.Set<TEntity>().AsNoTracking()
-            : _context.Set<TEntity>().AsTracking();
+        public IQueryable<TEntity> FindAll(bool trackChanges) => trackChanges
+            ? _context.Set<TEntity>()
+            : _context.Set<TEntity>().AsNoTracking();
 
         public IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> expression, bool trackChanges)
-            => !trackChanges
-            ? _context.Set<TEntity>().AsNoTracking()
-            : _context.Set<TEntity>().AsTracking();
-
-        //public async Task<TEntity> FindById(TKey id)
-        //{
-        //    return await _context.Set<TEntity>().FindAsync(id);
-        //}
+            => trackChanges
+            ? _context.Set<TEntity>().Where(expression)
+            : _context.Set<TEntity>().Where(expression).AsNoTracking();
 
         public void Create(TEntity entity) => _context.Set<TEntity>().Add(entity);
 

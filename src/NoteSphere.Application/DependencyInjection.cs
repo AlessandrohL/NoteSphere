@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions;
-using Application.Models.Identity;
+using Application.Identity;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -12,6 +12,9 @@ namespace Application
         {           
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IAuthenticationService<UserAuth>, AuthenticationService>();
+            services.AddScoped<IApplicationUserService, ApplicationUserService>();
+            services.AddScoped<INoteBookService, NoteBookService>();
+            services.AddScoped<INoteService, NoteService>();
             
             return services;
         }

@@ -1,6 +1,9 @@
-﻿using Domain.Abstractions.Repositories;
+﻿using Application.Querys;
+using Domain.Abstractions.Repositories;
 using Domain.Entities;
+using Domain.Filters;
 using Infrastructure.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +17,15 @@ namespace Infrastructure.Repositories
         public NoteRepository(ApplicationDbContext context)
             : base(context)
         { }
+
+        public Task<List<Note>> FindNotesAsync(NotesFilter request, Guid notebookId)
+        {
+            var queryBase = FindAll(trackChanges: false)
+                .Where(n => n.NoteBookId == notebookId);
+
+            var filteredQuery = NotesQuery.Generate(queryBase, request);
+
+            return filteredQuery.ToListAsync();
+        }
     }
 }

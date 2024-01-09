@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions;
-using Application.Models.Common;
-using Application.Models.DTOs.Token;
+using Application.Common;
+using Application.DTOs.Token;
 using Infrastructure.Helpers;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +48,7 @@ namespace Infrastructure.Identity.Jwt
             }
         }
 
+        /*
         public ClaimsPrincipal ValidateToken(string token)
         {
             var tokenValidationParameters = GetValidationParameters();
@@ -58,6 +59,7 @@ namespace Infrastructure.Identity.Jwt
 
             return claims;
         }
+        */
 
         public async Task<Result<ClaimsIdentity, string>> ValidateTokenAsync(string accessToken)
         {

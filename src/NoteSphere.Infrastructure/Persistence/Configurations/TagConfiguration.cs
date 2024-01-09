@@ -18,15 +18,15 @@ namespace Infrastructure.Data.Configurations
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.Id)
-                .HasColumnName("TagId");
+                .HasColumnName("Id");
 
             builder.Property(p => p.Name)
                 .HasMaxLength(40)
                 .IsUnicode(false)
                 .IsRequired();
 
-            builder.Property(p => p.CreatedTime)
-                .HasDefaultValueSql("GETDATE()");
+            builder.Property(p => p.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
 
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions;
-using Application.Models.DTOs.Token;
-using Application.Models.DTOs.User;
-using Application.Models.Identity;
+using Application.DTOs.Token;
+using Application.DTOs.User;
+using Application.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
