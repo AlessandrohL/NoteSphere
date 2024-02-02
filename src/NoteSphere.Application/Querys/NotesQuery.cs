@@ -40,7 +40,7 @@ namespace Application.Querys
             {
                 "title" => note => note.Title!,
                 "created" => note => note.CreatedAt,
-                "modified" => note => note.ModifiedAt,
+                "modified" => note => note.ModifiedAt ?? note.CreatedAt,
                 _ => note => note.Title!
             };
         }

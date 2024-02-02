@@ -1,4 +1,4 @@
-﻿using Application.DTOs.NoteBook;
+﻿using Application.DTOs.Notebook;
 using Application.DTOs.Notes;
 using Application.DTOs.User;
 using Application.Identity;
@@ -21,13 +21,15 @@ namespace Application.Mapper
             CreateMap<UserRegistrationDto, ApplicationUser>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
 
-            CreateMap<NoteBook, NoteBookDto>();
+            CreateMap<Notebook, NotebookDto>();
 
-            CreateMap<CreateNoteBookDto, NoteBook>();
+            CreateMap<CreateNotebookDto, Notebook>();
 
-            CreateMap<UpdateNotebookDto, NoteBook>();
+            CreateMap<UpdateNotebookDto, Notebook>();
 
             CreateMap<Note, NoteDto>();
+
+            CreateMap<CreateNoteDto, Note>();
         }
     }
 }

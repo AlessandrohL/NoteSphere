@@ -12,9 +12,9 @@ namespace Application.Abstractions
 {
     public interface IAuthenticationService<TUser> where TUser : IUserWithIdentityFeatures
     {
-        Task<Result<TokenResponse, List<string>>> RegisterUserAsync(UserRegistrationDto userRegistration);
-        Task<Result<TokenResponse, string>> LoginUserAsync(UserLoginDto userLogin);
-        Task<Result<TokenResponse, string>> RefreshTokenAsync(TokenRefreshRequest tokenRefreshRequest);
-        
+        Task<TokenResponse> RegisterUserAsync(UserRegistrationDto userRegistration);
+        Task<TokenResponse> LoginUserAsync(UserLoginDto userLogin);
+        Task<TokenResponse> RefreshTokenAsync(TokenRefreshRequest tokenRefreshRequest);
+
     }
 }

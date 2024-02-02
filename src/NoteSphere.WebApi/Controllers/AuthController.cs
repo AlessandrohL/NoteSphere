@@ -2,7 +2,9 @@
 using Application.DTOs.Token;
 using Application.DTOs.User;
 using Application.Identity;
+using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Common;
 
 namespace WebApi.Controllers
 {
@@ -19,29 +21,30 @@ namespace WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
         {
-            if (userRegistration is null) return BadRequest();
+            if (userRegistration is null)
+            {
+                return BadRequest();
+            }
 
-            var result = await _authenticationService.RegisterUserAsync(userRegistration);
+            var tokenResponse = await _authenticationService.RegisterUserAsync(userRegistration);
 
-            return result.Match<IActionResult>(
-                success => StatusCode(StatusCodes.Status201Created, success), BadRequest);
-           
+            return Ok(SuccessResponse<TokenResponse>.Ok(tokenResponse));
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] UserLoginDto userLogin)
         {
-            var result = await _authenticationService.LoginUserAsync(userLogin);
+            var tokenResponse = await _authenticationService.LoginUserAsync(userLogin);
 
-            return result.Match<IActionResult>(Ok, Unauthorized);
+            return Ok(SuccessResponse<TokenResponse>.Ok(tokenResponse));
         }
 
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRefreshRequest tokenRefresh)
         {
-            var result = await _authenticationService.RefreshTokenAsync(tokenRefresh);
+            var tokenResponse = await _authenticationService.RefreshTokenAsync(tokenRefresh);
 
-            return result.Match<IActionResult>(Ok, Unauthorized);
+            return Ok(SuccessResponse<TokenResponse>.Ok(tokenResponse));
         }
     }
 }

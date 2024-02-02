@@ -27,5 +27,20 @@ namespace Infrastructure.Repositories
 
             return filteredQuery.ToListAsync();
         }
+
+        public async Task<Note?> FindNoteAsync(
+            Guid id,
+            Guid notebookId,
+            bool trackChanges,
+            bool ignoreQueryFilter = false)
+        {
+            var query = FindByCondition(n =>
+                (n.NoteBookId == notebookId && n.Id == id),
+                trackChanges);
+
+            return ignoreQueryFilter
+                ? await query.IgnoreQueryFilters().FirstOrDefaultAsync()
+                : await query.FirstOrDefaultAsync();
+        }
     }
 }

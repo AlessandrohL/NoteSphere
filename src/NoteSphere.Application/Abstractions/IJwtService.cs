@@ -1,12 +1,9 @@
-﻿using Application.DTOs.Token;
-using Domain.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Common;
 
 namespace Application.Abstractions
 {
@@ -14,7 +11,7 @@ namespace Application.Abstractions
     {
         string CreateToken(IEnumerable<Claim> claims);
         (string, DateTime) GenerateRefreshTokenAndExpiryTime();
-        Task<Result<ClaimsIdentity, string>> ValidateTokenAsync(string accessToken);
+        Task<ClaimsIdentity> ValidateTokenAsync(string accessToken);
 
     }
 }

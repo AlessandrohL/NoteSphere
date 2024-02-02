@@ -41,7 +41,7 @@ namespace Infrastructure
 
             services.AddSingleton<JwtConfigHelper>();
 
-            services.AddScoped<INoteBookRepository, NoteBookRepository>();
+            services.AddScoped<INotebookRepository, NotebookRepository>();
             services.AddScoped<INoteRepository, NoteRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<ITodoRepository, TodoRepository>();

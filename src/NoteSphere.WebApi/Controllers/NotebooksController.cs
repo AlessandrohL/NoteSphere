@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions;
-using Application.DTOs.NoteBook;
+using Application.DTOs.Notebook;
 using Domain.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.ActionFilters;
+using WebApi.Common;
 using WebApi.ContextAcessor;
 
 namespace WebApi.Controllers
@@ -14,58 +15,55 @@ namespace WebApi.Controllers
     [ValidateGuid]
     public class NotebooksController : ControllerBase
     {
-        private readonly INoteBookService _noteBookService;
-        private readonly IApplicationUserService _applicationUserService;
+        private readonly INotebookService _notebookService;
         private readonly UserContextAccessor _userContext;
         public NotebooksController(
-            INoteBookService noteBookService,
-            IApplicationUserService applicationUser,
+            INotebookService notebookService,
             UserContextAccessor userContext)
         {
-            _noteBookService = noteBookService;
-            _applicationUserService = applicationUser;
+            _notebookService = notebookService;
             _userContext = userContext;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetNoteBooks([FromQuery] NoteBooksFilter noteBooksFilter)
+        public async Task<ActionResult<List<NotebookDto>>> GetNotebooks(
+            [FromQuery] NotebooksFilter noteBooksFilter)
         {
             var identityId = _userContext.GetCurrentIdentityId()!;
-            var userIdResult = await _applicationUserService.GetUserIdByIdentityIdAsync(identityId);
 
-            if (userIdResult.IsError) return BadRequest(userIdResult.Error);
+            var notebooks = await _notebookService.GetNotebooksAsync(
+                noteBooksFilter,
+                identityId);
 
-            var notebooksResult = await _noteBookService.GetNoteBooksAsync(noteBooksFilter, userIdResult.Value);
-
-            return notebooksResult.Match<IActionResult>(Ok, BadRequest);
+            return Ok(SuccessResponse<List<NotebookDto>>.Ok(notebooks));
         }
 
-        [HttpGet("{id:guid}", Name = "GetNoteBook")]
-        public async Task<IActionResult> GetNoteBook(Guid id)
+        [HttpGet("{id:guid}", Name = "GetNotebook")]
+        public async Task<IActionResult> GetNotebook(Guid id)
         {
             var identityId = _userContext.GetCurrentIdentityId()!;
-            var userIdResult = await _applicationUserService.GetUserIdByIdentityIdAsync(identityId);
 
-            if (userIdResult.IsError) return BadRequest(userIdResult.Error);
+            var notebook = await _notebookService.GetNotebookAsync(
+                id,
+                identityId);
 
-            var getResult = await _noteBookService.GetNotebookAsync(id, userIdResult.Value);
-
-            return getResult.Match<IActionResult>(Ok, NotFound);
+            return Ok(SuccessResponse<NotebookDto>.Ok(notebook));
         }
 
+        // probar con ActionResult<NotebookDto>
         [HttpPost]
-        public async Task<IActionResult> CreateNotebook([FromBody] CreateNoteBookDto noteBookDto)
+        public async Task<IActionResult> CreateNotebook([FromBody] CreateNotebookDto noteBookDto)
         {
             var identityId = _userContext.GetCurrentIdentityId()!;
-            var userIdResult = await _applicationUserService.GetUserIdByIdentityIdAsync(identityId);
 
-            if (userIdResult.IsError) return BadRequest(userIdResult.Error);
+            var notebookCreated = await _notebookService.CreateNotebookAsync(
+                noteBookDto,
+                identityId);
 
-            var createResult = await _noteBookService.CreateNotebookAsync(noteBookDto, userIdResult.Value);
-
-            return createResult.Match<IActionResult>(
-                success => CreatedAtRoute(nameof(GetNoteBook), new { id = success?.Id }, success),
-                BadRequest);
+            return CreatedAtRoute(
+                nameof(GetNotebook),
+                new { id = notebookCreated?.Id },
+                SuccessResponse<NotebookDto>.Created(notebookCreated));
         }
 
         [HttpPut("{id:guid}")]
@@ -74,13 +72,13 @@ namespace WebApi.Controllers
             [FromBody] UpdateNotebookDto notebookDto)
         {
             var identityId = _userContext.GetCurrentIdentityId()!;
-            var userIdResult = await _applicationUserService.GetUserIdByIdentityIdAsync(identityId);
 
-            if (userIdResult.IsError) return BadRequest(userIdResult.Error);
+            var updatedNotebook = await _notebookService.UpdateNotebookAsync(
+                id,
+                notebookDto,
+                identityId);
 
-            var updateResult = await _noteBookService.UpdateNotebookAsync(id, notebookDto, userIdResult.Value);
-
-            return updateResult.Match<IActionResult>(Ok, BadRequest);
+            return Ok(SuccessResponse<NotebookDto>.Ok(updatedNotebook));
         }
 
         [HttpDelete("{id:guid}")]
@@ -88,33 +86,52 @@ namespace WebApi.Controllers
             Guid id)
         {
             var identityId = _userContext.GetCurrentIdentityId()!;
-            var userIdResult = await _applicationUserService.GetUserIdByIdentityIdAsync(identityId);
 
-            if (userIdResult.IsError) return BadRequest(userIdResult.Error);
+            await _notebookService.SoftDeleteNotebookAsync(
+                id,
+                identityId);
 
-            var deleteResult = await _noteBookService.SoftDeleteNotebookAsync(id, userIdResult.Value);
-
-            return deleteResult.Match<IActionResult>(s => NoContent(), BadRequest);
+            return Ok(SuccessResponse<bool>.Ok(false));
         }
 
         [HttpPost("{id:guid}/recover")]
         public async Task<IActionResult> RecoverNotebook(Guid id)
         {
             var identityId = _userContext.GetCurrentIdentityId()!;
-            var userIdResult = await _applicationUserService.GetUserIdByIdentityIdAsync(identityId);
 
-            if (userIdResult.IsError) return BadRequest(userIdResult.Error);
+            await _notebookService.RecoverNotebookAsync(
+                id,
+                identityId);
 
-            var recoverResult = await _noteBookService.RecoverNotebookAsync(id, userIdResult.Value);
-
-            return recoverResult.Match<IActionResult>(s => Ok("Notebook recovered!"), BadRequest);
+            return Ok(SuccessResponse<bool>.Ok(false));
         }
 
         [HttpDelete("{id:guid}/destroy")]
         [AllowAnonymous]
         public IActionResult DestroyNotebook(Guid id)
         {
-            return Ok();
+            //var timeZone = HttpContext.Request.Headers["TimeZone"].ToString();
+            string timeZone = "awdawdawd";
+
+            bool isValid = IsValidTimeZone(timeZone);
+
+            if (!isValid)
+                return BadRequest("Not Valid");
+
+            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+
+            var dateUtc = DateTime.UtcNow;
+            var dateWithZone = TimeZoneInfo.ConvertTimeFromUtc(dateUtc, timeZoneInfo);
+
+            var dateNow = dateWithZone.ToString();
+
+            return Ok($"TimeZone from headers: {dateNow}");
+        }
+
+        private bool IsValidTimeZone(string timeZone)
+        {
+            return TimeZoneInfo.GetSystemTimeZones()
+                .Any(tz => tz.Id == timeZone);
         }
     }
 }

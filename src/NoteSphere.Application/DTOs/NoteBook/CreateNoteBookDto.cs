@@ -6,15 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTOs.NoteBook
+namespace Application.DTOs.Notebook
 {
-    public record CreateNoteBookDto
+    public record CreateNotebookDto
     {
-        [Required(ErrorMessage = NotebookErrors.TitleNullOrEmpty)]
-        [MinLength(1, ErrorMessage = NotebookErrors.TitleTooShort)]
+        [Required(ErrorMessage = NotebookErrorValidations.TitleNullOrEmpty)]
+        [MinLength(1, ErrorMessage = NotebookErrorValidations.TitleTooShort)]
         public string? Title { get; init; }
 
-        [MaxLength(70, ErrorMessage = NotebookErrors.DescriptionMaxLength)]
+        [MaxLength(70, ErrorMessage = NotebookErrorValidations.DescriptionMaxLength)]
         public string? Description { get; init; }
     }
 }

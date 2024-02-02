@@ -38,7 +38,7 @@ namespace Infrastructure.Data.Configurations
                 .WithOne(t => t.ApplicationUser)
                 .HasForeignKey(p => p.AppUserId);
 
-            builder.HasMany(p => p.NoteBooks)
+            builder.HasMany(p => p.Notebooks)
                 .WithOne(nb => nb.ApplicationUser)
                 .HasForeignKey(p => p.AppUserId);
 

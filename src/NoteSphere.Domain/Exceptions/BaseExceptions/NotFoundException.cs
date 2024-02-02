@@ -8,8 +8,18 @@ namespace Domain.Exceptions.BaseExceptions
 {
     public abstract class NotFoundException : Exception
     {
-        protected NotFoundException(string message)
+        public List<string> Errors { get; }
+
+        public NotFoundException(string message)
             : base(message)
-        { }
+        {
+            Errors = new() { message };
+        }
+
+        public NotFoundException(List<string> errors)
+            : base()
+        {
+            Errors = errors;
+        }
     }
 }

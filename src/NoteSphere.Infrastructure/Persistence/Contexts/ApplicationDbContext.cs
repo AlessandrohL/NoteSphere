@@ -17,7 +17,7 @@ namespace Infrastructure.Data.Contexts
     public class ApplicationDbContext : IdentityDbContext<UserAuth>
     {
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
@@ -29,7 +29,7 @@ namespace Infrastructure.Data.Contexts
             builder.ApplyConfiguration(new UserConfiguration());
 
             builder.ApplyConfiguration(new ApplicationUserConfiguration());
-            builder.ApplyConfiguration(new NoteBookConfiguration());
+            builder.ApplyConfiguration(new NotebookConfiguration());
             builder.ApplyConfiguration(new NoteConfiguration());
             builder.ApplyConfiguration(new TagConfiguration());
             builder.ApplyConfiguration(new NoteTagConfiguration());
@@ -39,7 +39,7 @@ namespace Infrastructure.Data.Contexts
             builder.ApplyConfiguration(new NotesSeed());
         }
 
-        public DbSet<NoteBook> NoteBooks { get; set; }
+        public DbSet<Notebook> NoteBooks { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<NoteTag> NoteTags { get; set; }

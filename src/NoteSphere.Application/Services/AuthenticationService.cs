@@ -3,6 +3,7 @@ using Application.Common;
 using Application.DTOs.Token;
 using Application.DTOs.User;
 using Application.Errors;
+using Application.Exceptions;
 using Application.Helpers;
 using Application.Identity;
 using AutoMapper;
@@ -37,18 +38,29 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        public async Task<Result<TokenResponse, string>> LoginUserAsync(UserLoginDto userLogin)
+        public async Task<TokenResponse> LoginUserAsync(UserLoginDto userLogin)
         {
-            var identityUser = await _userManager.FindByEmailAsync(userLogin.Email!);
+            var identityUser = await _userManager
+                .FindByEmailAsync(userLogin.Email!);
+
             if (identityUser is null)
-                return AuthErrorMessages.UserNotFound;
+            {
+                throw new IdentityUserNotFoundException();
+            }
 
-            var isValidPassword = await _userManager.CheckPasswordAsync(identityUser, userLogin.Password!);
+            var isValidPassword = await _userManager
+                .CheckPasswordAsync(identityUser, userLogin.Password!);
+
             if (!isValidPassword)
-                return AuthErrorMessages.InvalidCredentials;
+            {
+                throw new IdentityUserInvalidCredentialsException();
+            }
 
-            var claims = GenerateClaimsForUser(identityUser.Id, identityUser.UserName!, identityUser.Email!);
-            
+            var claims = GenerateClaimsForUser(
+                identityUser.Id,
+                identityUser.UserName!,
+                identityUser.Email!);
+
             var accessToken = _jwtService.CreateToken(claims);
             var (refreshToken, expiryTime) = _jwtService.GenerateRefreshTokenAndExpiryTime();
 
@@ -60,7 +72,8 @@ namespace Application.Services
             return new TokenResponse(accessToken, refreshToken);
         }
 
-        public async Task<Result<TokenResponse, List<string>>> RegisterUserAsync(UserRegistrationDto userRegistration)
+        public async Task<TokenResponse> RegisterUserAsync(
+            UserRegistrationDto userRegistration)
         {
             var identityUser = _mapper.Map<UserAuth>(userRegistration);
 
@@ -69,9 +82,18 @@ namespace Application.Services
             identityUser.RefreshToken = refreshToken;
             identityUser.RefreshTokenExpiryTime = expiryTime;
 
-            var identityResult = await _userManager.CreateAsync(identityUser, userRegistration.Password!);
+            var identityResult = await _userManager.CreateAsync(
+                identityUser,
+                userRegistration.Password!);
+
             if (!identityResult.Succeeded)
-                return identityResult.Errors.Select(e => e.Description).ToList();
+            {
+                var errors = identityResult.Errors
+                    .Select(e => e.Description)
+                    .ToList();
+
+                throw new IdentityUserValidationException(errors);
+            }
 
             var appUser = _mapper.Map<ApplicationUser>(userRegistration);
             appUser.AssignIdentity(identityUser.Id);
@@ -80,7 +102,11 @@ namespace Application.Services
 
             await _unitOfWork.SaveChangesAsync();
 
-            var claims = GenerateClaimsForUser(identityUser.Id, identityUser.UserName!, identityUser.Email!);
+            var claims = GenerateClaimsForUser(
+                identityUser.Id,
+                identityUser.UserName!,
+                identityUser.Email!);
+
             var accessToken = _jwtService.CreateToken(claims);
 
             return new TokenResponse(accessToken, refreshToken);
@@ -97,27 +123,36 @@ namespace Application.Services
         }
 
 
-        public async Task<Result<TokenResponse, string>> RefreshTokenAsync(TokenRefreshRequest tokenRefreshRequest)
+        public async Task<TokenResponse> RefreshTokenAsync(TokenRefreshRequest tokenRefreshRequest)
         {
-            var result = await _jwtService.ValidateTokenAsync(tokenRefreshRequest.AccessToken!);
+            var claimsIdentity = await _jwtService
+                .ValidateTokenAsync(tokenRefreshRequest.AccessToken!);
 
-            if (result.IsError)
-                return result.Error!;
-
-            var subject = result.Value!.FindFirst(ClaimTypes.NameIdentifier);
+            var subject = claimsIdentity
+                .FindFirst(ClaimTypes.NameIdentifier);
 
             var user = await _userManager.FindByIdAsync(subject.Value);
 
             if (user is null)
-                return AuthErrorMessages.UserNotFound;
+            {
+                throw new IdentityUserNotFoundException();
+            }
 
             if (user.RefreshToken != tokenRefreshRequest.RefreshToken)
-                return JwtErrorMessages.InvalidRefreshToken;
+            {
+                throw new InvalidRefreshTokenException();
+            }
 
             if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-                return JwtErrorMessages.RefreshTokenExpired;
+            {
+                throw new RefreshTokenExpiredException();
+            }
 
-            var claims = GenerateClaimsForUser(user.Id, user.UserName!, user.Email!);
+            var claims = GenerateClaimsForUser(
+                user.Id,
+                user.UserName!,
+                user.Email!);
+
             var accessToken = _jwtService.CreateToken(claims);
             var (refreshToken, _) = _jwtService.GenerateRefreshTokenAndExpiryTime();
 

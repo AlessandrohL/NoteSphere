@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using WebApi.ContextAcessor;
 using WebApi.Extensions;
+using WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-   // options.SuppressModelStateInvalidFilter = true;
+    // options.SuppressModelStateInvalidFilter = true;
 });
 
 builder.Services.AddControllers();
@@ -66,6 +67,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

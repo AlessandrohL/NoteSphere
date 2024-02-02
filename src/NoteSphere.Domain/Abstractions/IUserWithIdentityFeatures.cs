@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Domain.Abstractions
 {
     public interface IUserWithIdentityFeatures
-    { 
+    {
         string Id { get; set; }
         string? RefreshToken { get; set; }
         DateTime? RefreshTokenExpiryTime { get; set; }

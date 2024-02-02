@@ -23,14 +23,14 @@ namespace Infrastructure.Helpers
         public SigningCredentials GetSigningCredentials() =>
             new SigningCredentials(GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256);
 
-        public string? GetSecurityKey() => _config["JwtSettings:Secret"]; 
+        public string? GetSecurityKey() => _config["JwtSettings:Secret"];
 
         public byte[] GetSymmetricSecurityKeyAsBytes() => Encoding.UTF8.GetBytes(GetSecurityKey());
 
         public SymmetricSecurityKey GetSymmetricSecurityKey()
-            => new (GetSymmetricSecurityKeyAsBytes());
+            => new(GetSymmetricSecurityKeyAsBytes());
 
-        public double GetTokenValidityMinutes() 
+        public double GetTokenValidityMinutes()
             => Convert.ToDouble(_config["JwtSettings:TokenLifetimeMinutes"]);
 
         public double GetRefreshTokenValidityDays()

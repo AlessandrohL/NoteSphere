@@ -9,7 +9,7 @@ namespace Domain.Abstractions
 {
     public interface IUnitOfWork
     {
-        INoteBookRepository NoteBook { get; }
+        INotebookRepository Notebook { get; }
         INoteRepository Note { get; }
         ITagRepository Tag { get; }
         ITodoRepository Todo { get; }

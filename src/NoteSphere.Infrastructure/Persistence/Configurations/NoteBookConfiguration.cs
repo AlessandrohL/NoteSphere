@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Configurations
 {
-    public class NoteBookConfiguration : IEntityTypeConfiguration<NoteBook>
+    public class NotebookConfiguration : IEntityTypeConfiguration<Notebook>
     {
-        public void Configure(EntityTypeBuilder<NoteBook> builder)
+        public void Configure(EntityTypeBuilder<Notebook> builder)
         {
             builder.ToTable("Notebooks");
 
@@ -30,7 +30,7 @@ namespace Infrastructure.Data.Configurations
                 .IsUnicode(true);
 
             builder.HasMany(nb => nb.Notes)
-                .WithOne(n => n.NoteBook)
+                .WithOne(n => n.Notebook)
                 .HasForeignKey(n => n.NoteBookId);
 
             builder.Property(p => p.CreatedAt)

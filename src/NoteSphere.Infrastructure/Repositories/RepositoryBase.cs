@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public abstract class RepositoryBase<TEntity, TKey> 
+    public abstract class RepositoryBase<TEntity, TKey>
         : IRepositoryBase<TEntity, TKey> where TEntity : BaseEntity
     {
         protected readonly ApplicationDbContext _context;

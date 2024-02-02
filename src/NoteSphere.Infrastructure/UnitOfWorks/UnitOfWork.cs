@@ -12,7 +12,7 @@ namespace Infrastructure.UnitOfWorks
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
-        public INoteBookRepository NoteBook { get; }
+        public INotebookRepository Notebook { get; }
         public INoteRepository Note { get; }
         public ITagRepository Tag { get; }
         public ITodoRepository Todo { get; }
@@ -20,21 +20,21 @@ namespace Infrastructure.UnitOfWorks
 
 
         public UnitOfWork(ApplicationDbContext context,
-            INoteBookRepository noteBookRepository,
+            INotebookRepository noteBookRepository,
             INoteRepository noteRepository,
             ITagRepository tagRepository,
             ITodoRepository todoRepository,
             IApplicationUserRepository applicationUserRepository)
         {
             _context = context;
-            NoteBook = noteBookRepository;
+            Notebook = noteBookRepository;
             Note = noteRepository;
             Tag = tagRepository;
             Todo = todoRepository;
             ApplicationUser = applicationUserRepository;
         }
 
-        
+
         public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
 
     }

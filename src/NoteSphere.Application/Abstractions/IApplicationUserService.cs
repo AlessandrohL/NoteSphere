@@ -9,6 +9,6 @@ namespace Application.Abstractions
 {
     public interface IApplicationUserService
     {
-        Task<Result<Guid, string>> GetUserIdByIdentityIdAsync(string identityId);
+        Task<Guid> GetUserIdByIdentityIdAsync(string identityId);
     }
 }

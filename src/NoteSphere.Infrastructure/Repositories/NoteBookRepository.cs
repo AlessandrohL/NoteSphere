@@ -12,31 +12,33 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class NoteBookRepository : RepositoryBase<NoteBook, Guid>, INoteBookRepository
+    public class NotebookRepository : RepositoryBase<Notebook, Guid>, INotebookRepository
     {
-        public NoteBookRepository(ApplicationDbContext context)
+        public NotebookRepository(ApplicationDbContext context)
             : base(context)
         { }
 
-        public async Task<List<NoteBook>> FindNotebooksAsync(
-            NoteBooksFilter request,
+        public async Task<List<Notebook>> FindNotebooksAsync(
+            NotebooksFilter filter,
             Guid applicationUserId)
         {
             var queryBase = FindAll(trackChanges: false)
                 .Where(nb => nb.AppUserId == applicationUserId);
-            
-            var filteredQuery = NoteBookQuery.Generate(queryBase, request);
+
+            var filteredQuery = NotebookQuery.Generate(queryBase, filter);
 
             return await filteredQuery.ToListAsync();
         }
 
-        public async Task<NoteBook?> FindNotebookById(Guid id,
+        public async Task<Notebook?> FindNotebookById(
+            Guid id,
             Guid applicationUserId,
             bool trackChanges,
             bool ignoreQueryFilter = false)
         {
-            var query = FindByCondition(nb => (nb.AppUserId == applicationUserId && nb.Id == id),
-                                   trackChanges);
+            var query = FindByCondition(nb =>
+                (nb.AppUserId == applicationUserId && nb.Id == id),
+                trackChanges);
 
             return ignoreQueryFilter
                 ? await query.IgnoreQueryFilters().FirstOrDefaultAsync()
@@ -45,7 +47,7 @@ namespace Infrastructure.Repositories
 
         public Task<bool> IsNotebookExistsAsync(Guid applicationUserId, Guid id)
         {
-            return FindByCondition(nb => 
+            return FindByCondition(nb =>
                 (nb.AppUserId == applicationUserId && nb.Id == id),
                 trackChanges: false)
                 .AnyAsync();

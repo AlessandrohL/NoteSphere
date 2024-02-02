@@ -1,13 +1,13 @@
 ﻿using Application.Abstractions;
 using Application.Common;
-using Application.DTOs.NoteBook;
+using Application.DTOs.Notebook;
+using Application.Errors;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Errors;
+using Domain.Exceptions;
 using Domain.Filters;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,102 +16,149 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public class NoteBookService : INoteBookService
+    public class NotebookService : INotebookService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public NoteBookService(IUnitOfWork unitOfWork, IMapper mapper)
+        public NotebookService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public async Task<Result<List<NoteBookDto>, string>> GetNoteBooksAsync(
-            NoteBooksFilter request,
-            Guid userId)
+        private async Task<Guid> ValidateUserByIdentityAsync(string identityId)
         {
-            var notebooks = await _unitOfWork.NoteBook.FindNotebooksAsync(request, userId);
+            var appUserId = await _unitOfWork.ApplicationUser
+                .FindUserIdByIdentityIdAsync(identityId);
 
-            var notebooksDto = _mapper.Map<List<NoteBookDto>>(notebooks);
+            if (appUserId == Guid.Empty)
+            {
+                throw new ApplicationUserNotFoundException();
+            }
+
+            return appUserId;
+        }
+
+        public async Task<List<NotebookDto>> GetNotebooksAsync(
+            NotebooksFilter filter,
+            string identityId)
+        {
+            var userId = await ValidateUserByIdentityAsync(identityId);
+
+            var notebooks = await _unitOfWork.Notebook.FindNotebooksAsync(
+                filter,
+                applicationUserId: userId);
+
+            var notebooksDto = _mapper.Map<List<NotebookDto>>(notebooks);
 
             return notebooksDto;
         }
 
-        public async Task<Result<NoteBookDto?, string>> GetNotebookAsync(
+        public async Task<NotebookDto?> GetNotebookAsync(
             Guid id,
-            Guid userId)
+            string identityId)
         {
+            var userId = await ValidateUserByIdentityAsync(identityId);
 
-            var notebook = await _unitOfWork.NoteBook.FindNotebookById(id, userId, false);
-            
-            if (notebook is null) return NotebookErrors.NotFound;
+            var notebook = await _unitOfWork.Notebook.FindNotebookById(
+                id,
+                applicationUserId: userId,
+                trackChanges: false);
 
-            var notebookDto = _mapper.Map<NoteBookDto>(notebook);
+            if (notebook is null)
+            {
+                throw new NotebookNotFoundException(id);
+            }
+
+            var notebookDto = _mapper.Map<NotebookDto>(notebook);
 
             return notebookDto;
         }
 
-        public async Task<Result<NoteBookDto?, string>> CreateNotebookAsync(
-            CreateNoteBookDto noteBookDto,
-            Guid userId)
+        public async Task<NotebookDto?> CreateNotebookAsync(
+            CreateNotebookDto noteBookDto,
+            string identityId)
         {
-            var notebook = _mapper.Map<NoteBook>(noteBookDto);
+            var userId = await ValidateUserByIdentityAsync(identityId);
+
+            var notebook = _mapper.Map<Notebook>(noteBookDto);
             notebook.AppUserId = userId;
 
-            _unitOfWork.NoteBook.Create(notebook);
+            _unitOfWork.Notebook.Create(notebook);
 
             await _unitOfWork.SaveChangesAsync();
 
-            var notebookDtoToResult = _mapper.Map<NoteBookDto>(notebook);
+            var notebookDtoToResult = _mapper.Map<NotebookDto>(notebook);
 
             return notebookDtoToResult;
         }
 
-        public async Task<Result<NoteBookDto?, string>> UpdateNotebookAsync(
-            Guid notebookId,
+        public async Task<NotebookDto?> UpdateNotebookAsync(
+            Guid id,
             UpdateNotebookDto notebookDto,
-            Guid userId)
+            string identityId)
         {
-            var notebookDB = await _unitOfWork.NoteBook.FindNotebookById(
-                notebookId,
-                userId,
+            var userId = await ValidateUserByIdentityAsync(identityId);
+
+            var notebookDB = await _unitOfWork.Notebook.FindNotebookById(
+                id,
+                applicationUserId: userId,
                 trackChanges: true);
 
-            if (notebookDB is null) return NotebookErrors.NotFound;
+            if (notebookDB is null)
+            {
+                throw new NotebookNotFoundException(id);
+            }
 
             notebookDB = _mapper.Map(notebookDto, notebookDB);
             notebookDB.SetModified();
- 
+
             await _unitOfWork.SaveChangesAsync();
 
-            return _mapper.Map<NoteBookDto>(notebookDB);
+            return _mapper.Map<NotebookDto>(notebookDB);
         }
 
-        public async Task<Result<bool, string>> SoftDeleteNotebookAsync(Guid id, Guid userId)
+        public async Task SoftDeleteNotebookAsync(Guid id, string identityId)
         {
-            var notebook = await _unitOfWork.NoteBook.FindNotebookById(id, userId, true);
-            
-            if (notebook is null) return NotebookErrors.NotFound;
+            var userId = await ValidateUserByIdentityAsync(identityId);
+
+            var notebook = await _unitOfWork.Notebook.FindNotebookById(
+                id,
+                applicationUserId: userId,
+                trackChanges: true);
+
+            if (notebook is null)
+            {
+                throw new NotebookNotFoundException(id);
+            }
 
             notebook.Delete();
             await _unitOfWork.SaveChangesAsync();
-
-            return true;
         }
 
-        public async Task<Result<bool, string>> RecoverNotebookAsync(Guid id, Guid userId)
+        public async Task RecoverNotebookAsync(Guid id, string identityId)
         {
-            var notebook = await _unitOfWork.NoteBook.FindNotebookById(id, userId, true, ignoreQueryFilter: true);
-            
-            if (notebook is null) return NotebookErrors.NotFound;
+            var userId = await ValidateUserByIdentityAsync(identityId);
 
-            if (!notebook.IsDeleted) return NotebookErrors.NotInTrash;
+            var notebook = await _unitOfWork.Notebook.FindNotebookById(
+                id,
+                applicationUserId: userId,
+                trackChanges: true,
+                ignoreQueryFilter: true);
+
+            if (notebook is null)
+            {
+                throw new NotebookNotFoundException(id);
+            }
+
+            if (!notebook.IsDeleted)
+            {
+                throw new NotebookNotDeletedException(id);
+            }
 
             notebook.Restore();
             await _unitOfWork.SaveChangesAsync();
-
-            return true;
         }
     }
 }

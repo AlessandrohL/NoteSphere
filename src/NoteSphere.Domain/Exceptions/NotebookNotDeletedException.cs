@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public sealed class UserProfileNotFoundException : NotFoundException
+    public class NotebookNotDeletedException : BadRequestException
     {
-        public UserProfileNotFoundException(Guid id)
-            : base($"User Profile with ID {id} not found.")
+        public NotebookNotDeletedException(Guid notebookId)
+            : base($"The notebook with Id {notebookId} is not in the trash.")
         { }
     }
 }

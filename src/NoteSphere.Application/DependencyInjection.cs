@@ -9,13 +9,13 @@ namespace Application
     public static class DependencyInjection
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
-        {           
+        {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IAuthenticationService<UserAuth>, AuthenticationService>();
             services.AddScoped<IApplicationUserService, ApplicationUserService>();
-            services.AddScoped<INoteBookService, NoteBookService>();
+            services.AddScoped<INotebookService, NotebookService>();
             services.AddScoped<INoteService, NoteService>();
-            
+
             return services;
         }
     }

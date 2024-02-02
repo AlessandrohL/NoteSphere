@@ -17,8 +17,4 @@
     <ProjectReference Include="..\NoteSphere.Domain\Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>

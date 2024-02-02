@@ -11,7 +11,7 @@ namespace Application.DTOs.User
     public record UserLoginDto
     {
         [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = AuthErrorMessages.InvalidEmail)]
+        [EmailAddress(ErrorMessage = AuthErrorsValidation.InvalidEmail)]
         public string? Email { get; init; }
 
         [Required(ErrorMessage = "Password is required.")]

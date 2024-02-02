@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Errors
 {
-    public static class ApplicationUserErrors
+    public static class NoteErrorsValidation
     {
-        public const string NotFound = "User not found.";
+        public const string TitleRequired = "The note title is required.";
     }
 }

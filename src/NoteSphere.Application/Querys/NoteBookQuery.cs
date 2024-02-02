@@ -10,33 +10,35 @@ using System.Threading.Tasks;
 
 namespace Application.Querys
 {
-    public static class NoteBookQuery
+    public static class NotebookQuery
     {
-        public static IQueryable<NoteBook> Generate(IQueryable<NoteBook> query, NoteBooksFilter request)
+        public static IQueryable<Notebook> Generate(
+            IQueryable<Notebook> query,
+            NotebooksFilter filter)
         {
-            if (!string.IsNullOrEmpty(request.SearchTerm))
+            if (!string.IsNullOrEmpty(filter.SearchTerm))
             {
                 query = query.Where(nb =>
-                    nb.Title!.Contains(request.SearchTerm));
+                    nb.Title!.Contains(filter.SearchTerm));
             }
 
-            if (request.SortOrder?.ToLower() == "desc")
+            if (filter.SortOrder?.ToLower() == "desc")
             {
-                query = query.OrderByDescending(GetSortProperty(request));
+                query = query.OrderByDescending(GetSortProperty(filter));
             }
             else
             {
-                query = query.OrderBy(GetSortProperty(request));
+                query = query.OrderBy(GetSortProperty(filter));
             }
 
-            query = query.Paginate(request.Page, request.PageSize);
+            query = query.Paginate(filter.Page, filter.PageSize);
 
             return query;
         }
 
-        public static Expression<Func<NoteBook, object>> GetSortProperty(NoteBooksFilter request)
+        public static Expression<Func<Notebook, object>> GetSortProperty(NotebooksFilter filter)
         {
-            return request.SortColumn?.ToLower() switch
+            return filter.SortColumn?.ToLower() switch
             {
                 "title" => notebook => notebook.Title!,
                 "created" => notebook => notebook.CreatedAt,

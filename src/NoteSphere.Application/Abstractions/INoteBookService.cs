@@ -1,5 +1,5 @@
 ﻿using Application.Common;
-using Application.DTOs.NoteBook;
+using Application.DTOs.Notebook;
 using Domain.Filters;
 using System;
 using System.Collections.Generic;
@@ -9,13 +9,20 @@ using System.Threading.Tasks;
 
 namespace Application.Abstractions
 {
-    public interface INoteBookService
+    public interface INotebookService
     {
-        Task<Result<List<NoteBookDto>, string>> GetNoteBooksAsync(NoteBooksFilter request, Guid userId);
-        Task<Result<NoteBookDto?, string>> GetNotebookAsync(Guid id, Guid userId);
-        Task<Result<NoteBookDto?, string>> CreateNotebookAsync(CreateNoteBookDto notebookDto, Guid userId);
-        Task<Result<NoteBookDto?, string>> UpdateNotebookAsync(Guid id, UpdateNotebookDto notebookDto, Guid userId);
-        Task<Result<bool, string>> SoftDeleteNotebookAsync(Guid id, Guid userId);
-        Task<Result<bool, string>> RecoverNotebookAsync(Guid id, Guid userId);
+        Task<List<NotebookDto>> GetNotebooksAsync(
+            NotebooksFilter filter,
+            string identityId);
+        Task<NotebookDto?> GetNotebookAsync(Guid id, string identityId);
+        Task<NotebookDto?> CreateNotebookAsync(
+            CreateNotebookDto notebookDto,
+            string identityId);
+        Task<NotebookDto?> UpdateNotebookAsync(
+            Guid id,
+            UpdateNotebookDto notebookDto,
+            string identityId);
+        Task SoftDeleteNotebookAsync(Guid id, string identityId);
+        Task RecoverNotebookAsync(Guid id, string identityId);
     }
 }

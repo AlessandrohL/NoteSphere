@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Filters
 {
-    public class NoteBooksFilter : PaginationParameters
+    public class NotebooksFilter : PaginationParameters
     {
         public string? SearchTerm { get; set; }
         public string? SortColumn { get; set; }

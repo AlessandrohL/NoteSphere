@@ -10,7 +10,7 @@ namespace Domain.Exceptions
     public sealed class TagNotFoundException : NotFoundException
     {
         public TagNotFoundException(int id)
-            : base($"Tag with ID {id} not found.")
+            : base($"The tag with Id '{id}' was not found")
         { }
     }
 }

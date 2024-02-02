@@ -8,8 +8,20 @@ namespace Domain.Pagination
 {
     public abstract class PaginationParameters
     {
-        const int maxPageSize = 40;
-        public int Page { get; set; } = 1;
+        const int maxPageSize = 20;
+        private int _minPage = 1;
+        public int Page {
+            get
+            {
+                return _minPage;
+            } 
+            set
+            {
+                _minPage = (value < _minPage)
+                    ? _minPage
+                    : value;
+            }
+        }
 
         private int _pageSize = 10;
         public int PageSize
@@ -26,8 +38,6 @@ namespace Domain.Pagination
             }
 
         }
-
-
     }
 
 

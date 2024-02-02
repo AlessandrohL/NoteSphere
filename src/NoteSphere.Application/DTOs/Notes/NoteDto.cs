@@ -9,5 +9,7 @@ namespace Application.DTOs.Notes
     public record NoteDto
     {
         public Guid Id { get; init; }
+        public string? Title { get; init; }
+        public string? Content { get; init; }
     }
 }

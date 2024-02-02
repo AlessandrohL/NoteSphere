@@ -1,9 +1,6 @@
 ﻿using Application.Abstractions;
-using Application.Common;
-using Application.DTOs.Token;
+using Application.Exceptions;
 using Infrastructure.Helpers;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -24,7 +21,6 @@ namespace Infrastructure.Identity.Jwt
         {
             _jwtConfig = jwtConfig;
         }
-
 
         public string CreateToken(IEnumerable<Claim> claims)
         {
@@ -61,13 +57,18 @@ namespace Infrastructure.Identity.Jwt
         }
         */
 
-        public async Task<Result<ClaimsIdentity, string>> ValidateTokenAsync(string accessToken)
+        public async Task<ClaimsIdentity> ValidateTokenAsync(string accessToken)
         {
             var validationParameters = GetValidationParameters();
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var validationResult = await tokenHandler
                 .ValidateTokenAsync(accessToken, validationParameters);
+
+            if (!validationResult.IsValid)
+            {
+                throw new InvalidAccessTokenException();
+            }
 
             /*
             if (!validationResult.IsValid)
@@ -77,9 +78,7 @@ namespace Infrastructure.Identity.Jwt
             var validTo = validationResult.SecurityToken.ValidTo;
             */
 
-            return validationResult.IsValid
-                ? validationResult.ClaimsIdentity
-                : validationResult.Exception.Message;
+            return validationResult.ClaimsIdentity;
         }
 
         private TokenValidationParameters GetValidationParameters()

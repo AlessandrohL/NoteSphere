@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public sealed class NoteBookNotFoundException : NotFoundException
+    public sealed class NotebookNotFoundException : NotFoundException
     {
-        public NoteBookNotFoundException(Guid id)
-            : base($"Notebook with ID {id} not found.")
+        public NotebookNotFoundException(Guid id)
+            : base($"The Notebook with Id '{id}' was not found")
         { }
     }
 }

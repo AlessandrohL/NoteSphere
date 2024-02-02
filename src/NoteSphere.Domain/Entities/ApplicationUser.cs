@@ -15,7 +15,7 @@ namespace Domain.Entities
         public string? ProfilePicture { get; set; }
         public string IdentityId { get; set; } = null!;
         public ICollection<Tag>? Tags { get; set; }
-        public ICollection<NoteBook>? NoteBooks { get; set; }
+        public ICollection<Notebook>? Notebooks { get; set; }
 
         public void AssignIdentity(string id) => IdentityId = id;
     }
