@@ -18,7 +18,7 @@ namespace Domain.Entities
 
         public void AssignTenant(Guid tenantId)
         {
-            if (!Guid.TryParse(TenantId.ToString(), out _)
+            if (!Guid.TryParse(tenantId.ToString(), out _)
                 || tenantId == Guid.Empty)
             {
                 throw new Exception("The tenantID provided is not a valid GUID or is an empty GUID.");
