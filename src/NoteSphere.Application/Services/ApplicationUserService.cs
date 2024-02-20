@@ -21,10 +21,10 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Guid> GetUserIdByIdentityIdAsync(string identityId)
+        public async Task<Guid> GetUserIdByTenantAsync(Guid tenantId)
         {
             var appUserId = await _unitOfWork.ApplicationUser
-                .FindUserIdByIdentityIdAsync(identityId);
+                .FindUserIdByTenantAsync(tenantId);
 
             if (appUserId == Guid.Empty)
             {

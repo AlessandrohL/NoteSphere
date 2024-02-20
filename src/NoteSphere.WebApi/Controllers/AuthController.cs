@@ -4,6 +4,7 @@ using Application.DTOs.User;
 using Application.Identity;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.ActionFilters;
 using WebApi.Common;
 
 namespace WebApi.Controllers
@@ -19,8 +20,11 @@ namespace WebApi.Controllers
 
 
         [HttpPost("register")]
+        [RemoveAuthorizationHeader]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
         {
+            var headers = HttpContext.Request.Headers;
+
             if (userRegistration is null)
             {
                 return BadRequest();
@@ -32,8 +36,11 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("login")]
+        [RemoveAuthorizationHeader]
         public async Task<IActionResult> LoginUser([FromBody] UserLoginDto userLogin)
         {
+            var headers = HttpContext.Request.Headers;
+
             var tokenResponse = await _authenticationService.LoginUserAsync(userLogin);
 
             return Ok(SuccessResponse<TokenResponse>.Ok(tokenResponse));

@@ -11,18 +11,11 @@ namespace Application.Abstractions
 {
     public interface INotebookService
     {
-        Task<List<NotebookDto>> GetNotebooksAsync(
-            NotebooksFilter filter,
-            string identityId);
-        Task<NotebookDto?> GetNotebookAsync(Guid id, string identityId);
-        Task<NotebookDto?> CreateNotebookAsync(
-            CreateNotebookDto notebookDto,
-            string identityId);
-        Task<NotebookDto?> UpdateNotebookAsync(
-            Guid id,
-            UpdateNotebookDto notebookDto,
-            string identityId);
-        Task SoftDeleteNotebookAsync(Guid id, string identityId);
-        Task RecoverNotebookAsync(Guid id, string identityId);
+        Task<List<NotebookDto>> GetAllNotebooksAsync(NotebooksFilter filter);
+        Task<NotebookDto?> GetNotebookByIdAsync(Guid id);
+        Task<NotebookDto?> CreateNotebookAsync(CreateNotebookDto notebookDto);
+        Task<NotebookDto?> UpdateNotebookAsync(Guid id, UpdateNotebookDto notebookDto);
+        Task SoftDeleteNotebookAsync(Guid id);
+        Task RecoverNotebookAsync(Guid id);
     }
 }

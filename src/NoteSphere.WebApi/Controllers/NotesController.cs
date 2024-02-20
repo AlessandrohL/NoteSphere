@@ -16,14 +16,10 @@ namespace WebApi.Controllers
     public class NotesController : ControllerBase
     {
         private readonly INoteService _noteService;
-        private readonly UserContextAccessor _userContext;
 
-        public NotesController(
-            INoteService noteService,
-            UserContextAccessor userContextAccessor)
+        public NotesController(INoteService noteService)
         {
             _noteService = noteService;
-            _userContext = userContextAccessor;
         }
 
         [HttpGet]
@@ -31,10 +27,7 @@ namespace WebApi.Controllers
             Guid notebookId,
             [FromQuery] NotesFilter request)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            var notes = await _noteService
-                .GetNotesAsync(identityId, notebookId, request);
+            var notes = await _noteService.GetAllNotesAsync(notebookId, request);
 
             return Ok(SuccessResponse<List<NoteDto>>.Ok(notes));
         }
@@ -44,10 +37,7 @@ namespace WebApi.Controllers
             Guid notebookId,
             Guid id)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            var note = await _noteService
-                .GetNoteAsync(identityId, notebookId, id);
+            var note = await _noteService.GetNoteByIdAsync(notebookId, id);
 
             return Ok(SuccessResponse<NoteDto>.Ok(note));
         }
@@ -57,12 +47,7 @@ namespace WebApi.Controllers
             Guid notebookId,
             [FromBody] CreateNoteDto createNoteDto)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            var note = await _noteService.CreateNoteAsync(
-                identityId,
-                notebookId,
-                createNoteDto);
+            var note = await _noteService.CreateNoteAsync(notebookId, createNoteDto);
 
             return CreatedAtRoute(
                 nameof(GetNote),

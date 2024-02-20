@@ -16,22 +16,22 @@ namespace Infrastructure.Repositories
             : base(context)
         { }
 
-        public async Task<ApplicationUser?> FindUserByIdentityIdAsync(string id, bool trackChanges)
+        public async Task<ApplicationUser?> FindUserByTenantAsync(Guid tenantId, bool trackChanges)
         {
-            return await FindByCondition(u => u.IdentityId == id, trackChanges)
+            return await FindByCondition(u => u.TenantId == tenantId, trackChanges)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Guid> FindUserIdByIdentityIdAsync(string id)
+        public async Task<Guid> FindUserIdByTenantAsync(Guid tenantId)
         {
-            return await FindByCondition(u => u.IdentityId == id, false)
+            return await FindByCondition(u => u.TenantId == tenantId, false)
                 .Select(u => u.Id)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> IsUserExistsByIdentityAsync(string id)
+        public async Task<bool> IsUserExistsByTenantAsync(Guid tenantId)
         {
-            return await FindByCondition(u => u.IdentityId == id, false)
+            return await FindByCondition(u => u.TenantId == tenantId, false)
                 .AnyAsync();
         }
     }

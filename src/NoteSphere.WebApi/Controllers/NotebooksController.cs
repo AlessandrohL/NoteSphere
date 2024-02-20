@@ -29,11 +29,7 @@ namespace WebApi.Controllers
         public async Task<ActionResult<List<NotebookDto>>> GetNotebooks(
             [FromQuery] NotebooksFilter noteBooksFilter)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            var notebooks = await _notebookService.GetNotebooksAsync(
-                noteBooksFilter,
-                identityId);
+            var notebooks = await _notebookService.GetAllNotebooksAsync(noteBooksFilter);
 
             return Ok(SuccessResponse<List<NotebookDto>>.Ok(notebooks));
         }
@@ -41,11 +37,7 @@ namespace WebApi.Controllers
         [HttpGet("{id:guid}", Name = "GetNotebook")]
         public async Task<IActionResult> GetNotebook(Guid id)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            var notebook = await _notebookService.GetNotebookAsync(
-                id,
-                identityId);
+            var notebook = await _notebookService.GetNotebookByIdAsync(id);
 
             return Ok(SuccessResponse<NotebookDto>.Ok(notebook));
         }
@@ -54,11 +46,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNotebook([FromBody] CreateNotebookDto noteBookDto)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            var notebookCreated = await _notebookService.CreateNotebookAsync(
-                noteBookDto,
-                identityId);
+            var notebookCreated = await _notebookService.CreateNotebookAsync(noteBookDto);
 
             return CreatedAtRoute(
                 nameof(GetNotebook),
@@ -71,25 +59,15 @@ namespace WebApi.Controllers
             Guid id,
             [FromBody] UpdateNotebookDto notebookDto)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            var updatedNotebook = await _notebookService.UpdateNotebookAsync(
-                id,
-                notebookDto,
-                identityId);
+            var updatedNotebook = await _notebookService.UpdateNotebookAsync(id, notebookDto);
 
             return Ok(SuccessResponse<NotebookDto>.Ok(updatedNotebook));
         }
 
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> SoftDeleteNotebook(
-            Guid id)
+        public async Task<IActionResult> SoftDeleteNotebook(Guid id)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            await _notebookService.SoftDeleteNotebookAsync(
-                id,
-                identityId);
+            await _notebookService.SoftDeleteNotebookAsync(id);
 
             return Ok(SuccessResponse<bool>.Ok(false));
         }
@@ -97,11 +75,7 @@ namespace WebApi.Controllers
         [HttpPost("{id:guid}/recover")]
         public async Task<IActionResult> RecoverNotebook(Guid id)
         {
-            var identityId = _userContext.GetCurrentIdentityId()!;
-
-            await _notebookService.RecoverNotebookAsync(
-                id,
-                identityId);
+            await _notebookService.RecoverNotebookAsync(id);
 
             return Ok(SuccessResponse<bool>.Ok(false));
         }

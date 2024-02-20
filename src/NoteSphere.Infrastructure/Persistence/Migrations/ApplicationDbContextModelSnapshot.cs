@@ -104,20 +104,10 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("FirstNames")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("IdentityId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastNames")
                         .HasMaxLength(100)
@@ -129,9 +119,12 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("IdentityId")
+                    b.HasIndex("TenantId")
                         .IsUnique();
 
                     b.ToTable("ApplicationUsers", (string)null);
@@ -162,7 +155,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("NoteBookId")
+                    b.Property<Guid>("NotebookId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -173,157 +166,32 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NoteBookId");
+                    b.HasIndex("NotebookId");
 
                     b.ToTable("Notes", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("10aab93a-ab94-41fc-a205-a3f9afd354a8"),
-                            Content = "Contenido de ejemplo",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Nota SK"
-                        },
-                        new
-                        {
-                            Id = new Guid("a68e5a62-46f3-47e8-85dc-afbb82f0ae31"),
-                            Content = "Contenido de la segunda nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Segunda Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("e14cbc20-6ac6-4dda-98fd-37ac877b36a0"),
-                            Content = "Contenido de la tercera nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Tercera Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("54797698-e18a-4ae2-a1da-4d4daf4ca919"),
-                            Content = "Contenido de la cuarta nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Cuarta Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("fc2af002-02e3-4472-84a5-646dfcc1d761"),
-                            Content = "Contenido de la quinta nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Quinta Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("d7f83b45-4109-4658-b433-7fd23646c426"),
-                            Content = "Contenido de la sexta nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Sexta Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("59a761db-11ad-4979-9408-4bba1c891067"),
-                            Content = "Contenido de la séptima nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Séptima Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("7b4affff-ba13-42ab-86f0-45d315d4f85f"),
-                            Content = "Contenido de la octava nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Octava Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("428646ff-29c6-4f7f-a9e9-c57a9afa73c6"),
-                            Content = "Contenido de la novena nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Novena Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("9868fca0-774c-453c-ba35-59b24dc53bbb"),
-                            Content = "Contenido de la décima nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Décima Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("f9a6be30-4563-4647-93c3-de0c774aff28"),
-                            Content = "Contenido de la undécima nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Undécima Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("df90d467-0ade-4415-bfda-03bb3171a2fd"),
-                            Content = "Contenido de la duodécima nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Duodécima Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("c69cb328-82d6-4691-bbcb-5c4a7cd7a58e"),
-                            Content = "Contenido de la decimotercera nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Decimotercera Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("7c168744-34d5-4e91-9dbd-e8d52dcb9dd4"),
-                            Content = "Contenido de la decimocuarta nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Decimocuarta Nota"
-                        },
-                        new
-                        {
-                            Id = new Guid("eb29ed64-e904-46a5-9766-340fdd63b250"),
-                            Content = "Contenido de la decimoquinta nota",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            NoteBookId = new Guid("cdc4756e-b9bb-4c08-d303-08dc0e447268"),
-                            Title = "Decimoquinta Nota"
-                        });
                 });
 
-            modelBuilder.Entity("Domain.Entities.NoteBook", b =>
+            modelBuilder.Entity("Domain.Entities.NoteTag", b =>
+                {
+                    b.Property<Guid>("NoteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("NoteId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("NoteTags");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Notebook", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("Id");
-
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -344,6 +212,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -352,24 +223,10 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("TenantId")
+                        .IsUnique();
 
                     b.ToTable("Notebooks", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.NoteTag", b =>
-                {
-                    b.Property<Guid>("NoteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.HasKey("NoteId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("NoteTags");
                 });
 
             modelBuilder.Entity("Domain.Entities.Tag", b =>
@@ -380,9 +237,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnName("Id");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -404,9 +258,13 @@ namespace Infrastructure.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(40)");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("TenantId")
+                        .IsUnique();
 
                     b.ToTable("Tags", (string)null);
                 });
@@ -435,7 +293,29 @@ namespace Infrastructure.Persistence.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -461,6 +341,28 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -546,24 +448,13 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Note", b =>
                 {
-                    b.HasOne("Domain.Entities.NoteBook", "NoteBook")
+                    b.HasOne("Domain.Entities.Notebook", "Notebook")
                         .WithMany("Notes")
-                        .HasForeignKey("NoteBookId")
+                        .HasForeignKey("NotebookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("NoteBook");
-                });
-
-            modelBuilder.Entity("Domain.Entities.NoteBook", b =>
-                {
-                    b.HasOne("Domain.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany("NoteBooks")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
+                    b.Navigation("Notebook");
                 });
 
             modelBuilder.Entity("Domain.Entities.NoteTag", b =>
@@ -583,17 +474,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Note");
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Tag", b =>
-                {
-                    b.HasOne("Domain.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany("Tags")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -647,19 +527,12 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.ApplicationUser", b =>
-                {
-                    b.Navigation("NoteBooks");
-
-                    b.Navigation("Tags");
-                });
-
             modelBuilder.Entity("Domain.Entities.Note", b =>
                 {
                     b.Navigation("Tags");
                 });
 
-            modelBuilder.Entity("Domain.Entities.NoteBook", b =>
+            modelBuilder.Entity("Domain.Entities.Notebook", b =>
                 {
                     b.Navigation("Notes");
                 });

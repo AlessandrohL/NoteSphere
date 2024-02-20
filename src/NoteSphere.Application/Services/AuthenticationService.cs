@@ -21,6 +21,7 @@ namespace Application.Services
 {
     public class AuthenticationService : IAuthenticationService<UserAuth>
     {
+        private const string TenantClaimName = "tenantId"; 
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<UserAuth> _userManager;
         private readonly IJwtService _jwtService;
@@ -56,10 +57,14 @@ namespace Application.Services
                 throw new IdentityUserInvalidCredentialsException();
             }
 
+            var tenantClaim = await GetTenantFromUser(identityUser);
+            var tenantId = Guid.Parse(tenantClaim!.Value);
+
             var claims = GenerateClaimsForUser(
                 identityUser.Id,
                 identityUser.UserName!,
-                identityUser.Email!);
+                identityUser.Email!,
+                tenantId);
 
             var accessToken = _jwtService.CreateToken(claims);
             var (refreshToken, expiryTime) = _jwtService.GenerateRefreshTokenAndExpiryTime();
@@ -95,8 +100,14 @@ namespace Application.Services
                 throw new IdentityUserValidationException(errors);
             }
 
+            var tenantId = Guid.NewGuid();
+
+            var tenantIdClaim = new Claim(TenantClaimName, tenantId.ToString());
+
+            await _userManager.AddClaimAsync(identityUser, tenantIdClaim);
+
             var appUser = _mapper.Map<ApplicationUser>(userRegistration);
-            appUser.AssignIdentity(identityUser.Id);
+            appUser.AssignTenant(tenantId);
 
             _unitOfWork.ApplicationUser.Create(appUser);
 
@@ -105,20 +116,26 @@ namespace Application.Services
             var claims = GenerateClaimsForUser(
                 identityUser.Id,
                 identityUser.UserName!,
-                identityUser.Email!);
+                identityUser.Email!,
+                tenantId);
 
             var accessToken = _jwtService.CreateToken(claims);
 
             return new TokenResponse(accessToken, refreshToken);
         }
 
-        private List<Claim> GenerateClaimsForUser(string id, string username, string email)
+        private List<Claim> GenerateClaimsForUser(
+            string id, 
+            string username, 
+            string email,
+            Guid tenantId)
         {
             return new List<Claim>()
             {
                new (JwtClaimTypes.Subject, id),
                new (JwtClaimTypes.Name, username),
-               new (JwtClaimTypes.Email, email)
+               new (JwtClaimTypes.Email, email),
+               new (TenantClaimName, tenantId.ToString())
             };
         }
 
@@ -148,10 +165,14 @@ namespace Application.Services
                 throw new RefreshTokenExpiredException();
             }
 
+            var userTenantClaim  = await GetTenantFromUser(user);
+            var tenantId = Guid.Parse(userTenantClaim!.Value);
+
             var claims = GenerateClaimsForUser(
                 user.Id,
                 user.UserName!,
-                user.Email!);
+                user.Email!,
+                tenantId);
 
             var accessToken = _jwtService.CreateToken(claims);
             var (refreshToken, _) = _jwtService.GenerateRefreshTokenAndExpiryTime();
@@ -163,6 +184,13 @@ namespace Application.Services
             return new TokenResponse(accessToken, refreshToken);
         }
 
+        private async Task<Claim?> GetTenantFromUser(UserAuth user)
+        {
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var userTenant = userClaims.FirstOrDefault(c => c.Type == TenantClaimName);
+
+            return userTenant;
+        }
 
     }
 }

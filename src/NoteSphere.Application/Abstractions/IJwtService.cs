@@ -11,6 +11,7 @@ namespace Application.Abstractions
     {
         string CreateToken(IEnumerable<Claim> claims);
         (string, DateTime) GenerateRefreshTokenAndExpiryTime();
+        ClaimsPrincipal ValidateToken(string accessToken);
         Task<ClaimsIdentity> ValidateTokenAsync(string accessToken);
 
     }

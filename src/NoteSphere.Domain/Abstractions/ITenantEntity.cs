@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Abstractions
 {
-    public interface ISoftDelete
+    public interface ITenantEntity
     {
-        bool IsDeleted { get; set; }
-        DateTime? DeleteAt { get; set; }
-        void Delete();
-        void Restore();
+        Guid TenantId { get; }
+        public void AssignTenant(Guid tenantId);
+
     }
 }

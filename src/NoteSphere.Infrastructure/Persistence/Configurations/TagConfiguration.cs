@@ -20,6 +20,13 @@ namespace Infrastructure.Data.Configurations
             builder.Property(p => p.Id)
                 .HasColumnName("Id");
 
+            builder
+                .HasIndex(p => p.TenantId)
+                .IsUnique();
+
+            builder.Property(p => p.TenantId)
+                .IsRequired();
+
             builder.Property(p => p.Name)
                 .HasMaxLength(40)
                 .IsUnicode(false)

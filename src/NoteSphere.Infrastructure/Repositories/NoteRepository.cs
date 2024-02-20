@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
         public Task<List<Note>> FindNotesAsync(NotesFilter request, Guid notebookId)
         {
             var queryBase = FindAll(trackChanges: false)
-                .Where(n => n.NoteBookId == notebookId);
+                .Where(n => n.NotebookId == notebookId);
 
             var filteredQuery = NotesQuery.Generate(queryBase, request);
 
@@ -35,7 +35,7 @@ namespace Infrastructure.Repositories
             bool ignoreQueryFilter = false)
         {
             var query = FindByCondition(n =>
-                (n.NoteBookId == notebookId && n.Id == id),
+                (n.NotebookId == notebookId && n.Id == id),
                 trackChanges);
 
             return ignoreQueryFilter

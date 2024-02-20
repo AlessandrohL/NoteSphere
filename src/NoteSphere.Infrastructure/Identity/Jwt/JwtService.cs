@@ -44,18 +44,24 @@ namespace Infrastructure.Identity.Jwt
             }
         }
 
-        /*
-        public ClaimsPrincipal ValidateToken(string token)
+        public ClaimsPrincipal ValidateToken(string accessToken)
         {
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                throw new Exception("Access token cannot be null or empty");
+            }
+
+            accessToken = accessToken.Substring(7);
+
             var tokenValidationParameters = GetValidationParameters();
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var claims = tokenHandler
-                .ValidateToken(token, tokenValidationParameters, out var validatedToken);
+                .ValidateToken(accessToken, tokenValidationParameters, out var _);
 
             return claims;
         }
-        */
+
 
         public async Task<ClaimsIdentity> ValidateTokenAsync(string accessToken)
         {
@@ -69,14 +75,6 @@ namespace Infrastructure.Identity.Jwt
             {
                 throw new InvalidAccessTokenException();
             }
-
-            /*
-            if (!validationResult.IsValid)
-                return validationResult.Exception.Message;
-
-            // Valido hasta (validTo).
-            var validTo = validationResult.SecurityToken.ValidTo;
-            */
 
             return validationResult.ClaimsIdentity;
         }

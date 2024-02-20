@@ -7,15 +7,25 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public sealed class Tag : BaseEntity, ISoftDelete
+    public sealed class Tag : BaseEntity, ISoftDeleteEntity, ITenantEntity
     {
         public int Id { get; set; }
+        public Guid TenantId { get; private set; }
         public string? Name { get; set; }
-        public Guid AppUserId { get; set; }
-        public ApplicationUser? ApplicationUser { get; set; }
         public ICollection<NoteTag>? Notes { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DeleteAt { get; set; }
+
+        public void AssignTenant(Guid tenantId)
+        {
+            if (!Guid.TryParse(TenantId.ToString(), out _)
+                || tenantId == Guid.Empty)
+            {
+                throw new Exception("The tenantID provided is not a valid GUID or is an empty GUID.");
+            }
+
+            TenantId = tenantId;
+        }
 
         public void Delete()
         {

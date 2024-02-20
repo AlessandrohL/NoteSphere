@@ -18,10 +18,10 @@ namespace Infrastructure.Data.Configurations
             builder.HasKey(p => p.Id);
 
             builder
-                .HasIndex(p => p.IdentityId)
+                .HasIndex(p => p.TenantId)
                 .IsUnique();
 
-            builder.Property(p => p.IdentityId)
+            builder.Property(p => p.TenantId)
                 .IsRequired();
 
             builder.Property(p => p.FirstNames)
@@ -34,17 +34,6 @@ namespace Infrastructure.Data.Configurations
             builder.Property(p => p.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.HasMany(p => p.Tags)
-                .WithOne(t => t.ApplicationUser)
-                .HasForeignKey(p => p.AppUserId);
-
-            builder.HasMany(p => p.Notebooks)
-                .WithOne(nb => nb.ApplicationUser)
-                .HasForeignKey(p => p.AppUserId);
-
-            //builder.HasMany(p => p.Todos)
-            //    .WithOne(t => t.ApplicationUser)
-            //    .HasForeignKey(p => p.AppUserId);
         }
     }
 }

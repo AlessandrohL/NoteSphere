@@ -26,22 +26,9 @@ namespace Application.Services
             _mapper = mapper;
         }
 
-        private async Task<Guid> ValidateUserByIdentityAsync(string identityId)
+        private async Task<bool> ValidateNotebookExistsAsync(Guid notebookId)
         {
-            var appUserId = await _unitOfWork.ApplicationUser
-                .FindUserIdByIdentityIdAsync(identityId);
-
-            if (appUserId == Guid.Empty)
-            {
-                throw new ApplicationUserNotFoundException();
-            }
-
-            return appUserId;
-        }
-        private async Task<bool> ValidateNotebookExistsAsync(Guid userId, Guid notebookId)
-        {
-            var notebookExists = await _unitOfWork.Notebook
-                .IsNotebookExistsAsync(userId, notebookId);
+            var notebookExists = await _unitOfWork.Notebook.IsNotebookExistsAsync(notebookId);
 
             if (!notebookExists)
             {
@@ -51,14 +38,9 @@ namespace Application.Services
             return notebookExists;
         }
 
-        public async Task<List<NoteDto>> GetNotesAsync(
-            string identityId,
-            Guid notebookId,
-            NotesFilter request)
+        public async Task<List<NoteDto>> GetAllNotesAsync(Guid notebookId, NotesFilter request)
         {
-            var userId = await ValidateUserByIdentityAsync(identityId);
-
-            await ValidateNotebookExistsAsync(userId, notebookId);
+            await ValidateNotebookExistsAsync(notebookId);
 
             var notes = await _unitOfWork.Note.FindNotesAsync(request, notebookId);
 
@@ -67,11 +49,9 @@ namespace Application.Services
             return notesDto;
         }
 
-        public async Task<NoteDto> GetNoteAsync(string identityId, Guid notebookId, Guid noteId)
+        public async Task<NoteDto> GetNoteByIdAsync(Guid notebookId, Guid noteId)
         {
-            var userId = await ValidateUserByIdentityAsync(identityId);
-
-            await ValidateNotebookExistsAsync(userId, notebookId);
+            await ValidateNotebookExistsAsync(notebookId);
 
             var note = await _unitOfWork.Note.FindNoteAsync(
                 noteId,
@@ -89,17 +69,12 @@ namespace Application.Services
             return noteDto;
         }
 
-        public async Task<NoteDto> CreateNoteAsync(
-            string identityId, 
-            Guid notebookId, 
-            CreateNoteDto noteDto)
+        public async Task<NoteDto> CreateNoteAsync(Guid notebookId, CreateNoteDto noteDto)
         {
-            var userId = await ValidateUserByIdentityAsync(identityId);
-
-            await ValidateNotebookExistsAsync(userId, notebookId);
+            await ValidateNotebookExistsAsync(notebookId);
 
             var note = _mapper.Map<Note>(noteDto);
-            note.NoteBookId = notebookId;
+            note.NotebookId = notebookId;
 
             _unitOfWork.Note.Create(note);
 

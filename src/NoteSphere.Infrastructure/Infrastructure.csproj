@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Persistence\Extensions\" />
     <Folder Include="Persistence\Migrations\" />
   </ItemGroup>
 

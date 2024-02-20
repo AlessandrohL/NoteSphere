@@ -11,19 +11,8 @@ namespace Application.Abstractions
 {
     public interface INoteService
     {
-        Task<List<NoteDto>> GetNotesAsync(
-            string identityId,
-            Guid notebookId,
-            NotesFilter request);
-
-        Task<NoteDto> GetNoteAsync(
-            string identityId,
-            Guid notebookId,
-            Guid noteId);
-
-        Task<NoteDto> CreateNoteAsync(
-            string identityId,
-            Guid notebookId,
-            CreateNoteDto noteDto);
+        Task<List<NoteDto>> GetAllNotesAsync(Guid notebookId, NotesFilter request);
+        Task<NoteDto> GetNoteByIdAsync(Guid notebookId, Guid noteId);
+        Task<NoteDto> CreateNoteAsync(Guid notebookId, CreateNoteDto noteDto);
     }
 }

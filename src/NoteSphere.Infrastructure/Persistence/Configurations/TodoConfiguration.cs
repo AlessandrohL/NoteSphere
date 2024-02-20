@@ -15,6 +15,13 @@ namespace Infrastructure.Data.Configurations
         {
             builder.HasKey(p => p.Id);
 
+            builder
+                .HasIndex(p => p.TenantId)
+                .IsUnique();
+
+            builder.Property(p => p.TenantId)
+                .IsRequired();
+
             builder.Property(p => p.Title)
                 .HasMaxLength(120)
                 .IsRequired();

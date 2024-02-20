@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public sealed class Note : BaseEntity, ISoftDelete
+    public sealed class Note : BaseEntity, ISoftDeleteEntity
     {
         public Guid Id { get; set; }
         public string? Title { get; set; }
         public string? Content { get; set; }
-        public Guid NoteBookId { get; set; }
+        public Guid NotebookId { get; set; }
         public Notebook? Notebook { get; set; }
         public ICollection<NoteTag>? Tags { get; set; }
         public bool IsDeleted { get; set; }

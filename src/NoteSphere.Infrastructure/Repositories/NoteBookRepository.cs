@@ -19,12 +19,9 @@ namespace Infrastructure.Repositories
         { }
 
         public async Task<List<Notebook>> FindNotebooksAsync(
-            NotebooksFilter filter,
-            Guid applicationUserId)
+            NotebooksFilter filter)
         {
-            var queryBase = FindAll(trackChanges: false)
-                .Where(nb => nb.AppUserId == applicationUserId);
-
+            var queryBase = FindAll(trackChanges: false);
             var filteredQuery = NotebookQuery.Generate(queryBase, filter);
 
             return await filteredQuery.ToListAsync();
@@ -32,24 +29,19 @@ namespace Infrastructure.Repositories
 
         public async Task<Notebook?> FindNotebookById(
             Guid id,
-            Guid applicationUserId,
             bool trackChanges,
             bool ignoreQueryFilter = false)
         {
-            var query = FindByCondition(nb =>
-                (nb.AppUserId == applicationUserId && nb.Id == id),
-                trackChanges);
+            var query = FindByCondition(nb => nb.Id == id, trackChanges);
 
             return ignoreQueryFilter
                 ? await query.IgnoreQueryFilters().FirstOrDefaultAsync()
                 : await query.FirstOrDefaultAsync();
         }
 
-        public Task<bool> IsNotebookExistsAsync(Guid applicationUserId, Guid id)
+        public Task<bool> IsNotebookExistsAsync(Guid id)
         {
-            return FindByCondition(nb =>
-                (nb.AppUserId == applicationUserId && nb.Id == id),
-                trackChanges: false)
+            return FindByCondition(nb => nb.Id == id, trackChanges: false)
                 .AnyAsync();
         }
 

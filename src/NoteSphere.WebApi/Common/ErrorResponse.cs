@@ -1,4 +1,6 @@
 ﻿
+using WebApi.Helpers;
+
 namespace WebApi.Common
 {
     public class ErrorResponse: Response
@@ -19,6 +21,15 @@ namespace WebApi.Common
             Title = title;
             IsSuccess = false;
             Errors = new() { error };
+        }
+
+        public static ErrorResponse BadRequest(string error)
+        {
+            return new ErrorResponse(
+                title: HttpStatusHelper
+                    .GetTitleByStatusCode(StatusCodes.Status400BadRequest),
+                error,
+                StatusCodes.Status400BadRequest);
         }
     }
 }

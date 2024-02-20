@@ -12,8 +12,5 @@ namespace Application.DTOs.Notebook
         public Guid Id { get; init; }
         public string? Title { get; init; }
         public string? Description { get; init; }
-
-        [JsonIgnore]
-        public Guid AppUserId { get; init; }
     }
 }
