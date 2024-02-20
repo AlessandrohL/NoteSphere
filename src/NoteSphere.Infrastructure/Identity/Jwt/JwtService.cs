@@ -32,17 +32,18 @@ namespace Infrastructure.Identity.Jwt
             return accessToken;
         }
 
-        public (string, DateTime) GenerateRefreshTokenAndExpiryTime()
+        public string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return (
-                    Convert.ToBase64String(randomNumber),
-                    DateTime.UtcNow.AddDays(_jwtConfig.GetRefreshTokenValidityDays()));
-            }
+            
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
         }
+
+        public DateTime GenerateExpirationDateForRefreshToken()
+            => DateTime.UtcNow.AddDays(_jwtConfig.GetRefreshTokenValidityDays());
 
         public ClaimsPrincipal ValidateToken(string accessToken)
         {
@@ -74,6 +75,11 @@ namespace Infrastructure.Identity.Jwt
             if (!validationResult.IsValid)
             {
                 throw new InvalidAccessTokenException();
+            }
+
+            if (DateTime.UtcNow <= validationResult.SecurityToken.ValidTo)
+            {
+                throw new InvalidAccessTokenException("The access token is still valid.");
             }
 
             return validationResult.ClaimsIdentity;
@@ -108,5 +114,7 @@ namespace Infrastructure.Identity.Jwt
 
             return tokenOptions;
         }
+
+
     }
 }

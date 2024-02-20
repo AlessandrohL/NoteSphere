@@ -13,5 +13,9 @@ namespace Application.Exceptions
         public InvalidAccessTokenException()
             : base("The access token provided is invalid.")
         { }
+
+        public InvalidAccessTokenException(string message)
+            : base(message)
+        { }
     }
 }

@@ -10,7 +10,8 @@ namespace Application.Abstractions
     public interface IJwtService
     {
         string CreateToken(IEnumerable<Claim> claims);
-        (string, DateTime) GenerateRefreshTokenAndExpiryTime();
+        string GenerateRefreshToken();
+        DateTime GenerateExpirationDateForRefreshToken();
         ClaimsPrincipal ValidateToken(string accessToken);
         Task<ClaimsIdentity> ValidateTokenAsync(string accessToken);
 

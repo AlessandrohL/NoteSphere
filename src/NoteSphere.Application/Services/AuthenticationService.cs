@@ -21,22 +21,24 @@ namespace Application.Services
 {
     public class AuthenticationService : IAuthenticationService<UserAuth>
     {
-        private const string TenantClaimName = "tenantId"; 
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<UserAuth> _userManager;
         private readonly IJwtService _jwtService;
+        private readonly ITenantService _tenantService;
         private readonly IMapper _mapper;
 
         public AuthenticationService(
             UserManager<UserAuth> userManager,
             IUnitOfWork unitOfWork,
             IJwtService jwtService,
-            IMapper mapper)
+            IMapper mapper,
+            ITenantService tenantService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
             _mapper = mapper;
+            _tenantService = tenantService;
         }
 
         public async Task<TokenResponse> LoginUserAsync(UserLoginDto userLogin)
@@ -57,20 +59,17 @@ namespace Application.Services
                 throw new IdentityUserInvalidCredentialsException();
             }
 
-            var tenantClaim = await GetTenantFromUser(identityUser);
+            var tenantClaim = await _tenantService.GetTenantFromUser(identityUser);
             var tenantId = Guid.Parse(tenantClaim!.Value);
 
-            var claims = GenerateClaimsForUser(
-                identityUser.Id,
-                identityUser.UserName!,
-                identityUser.Email!,
-                tenantId);
+            var claims = _tenantService.GenerateClaimsForUser(identityUser, tenantId);
 
             var accessToken = _jwtService.CreateToken(claims);
-            var (refreshToken, expiryTime) = _jwtService.GenerateRefreshTokenAndExpiryTime();
+            var refreshToken = _jwtService.GenerateRefreshToken();
+            var refreshTokenExpiration = _jwtService.GenerateExpirationDateForRefreshToken();
 
             identityUser.RefreshToken = refreshToken;
-            identityUser.RefreshTokenExpiryTime = expiryTime;
+            identityUser.RefreshTokenExpiryTime = refreshTokenExpiration;
 
             await _userManager.UpdateAsync(identityUser);
 
@@ -82,10 +81,11 @@ namespace Application.Services
         {
             var identityUser = _mapper.Map<UserAuth>(userRegistration);
 
-            var (refreshToken, expiryTime) = _jwtService.GenerateRefreshTokenAndExpiryTime();
+            var refreshToken = _jwtService.GenerateRefreshToken();
+            var refreshTokenExpiration = _jwtService.GenerateExpirationDateForRefreshToken();
 
             identityUser.RefreshToken = refreshToken;
-            identityUser.RefreshTokenExpiryTime = expiryTime;
+            identityUser.RefreshTokenExpiryTime = refreshTokenExpiration;
 
             var identityResult = await _userManager.CreateAsync(
                 identityUser,
@@ -100,45 +100,23 @@ namespace Application.Services
                 throw new IdentityUserValidationException(errors);
             }
 
-            var tenantId = Guid.NewGuid();
+            var tenant = _tenantService.CreateTenant();
 
-            var tenantIdClaim = new Claim(TenantClaimName, tenantId.ToString());
-
-            await _userManager.AddClaimAsync(identityUser, tenantIdClaim);
+            await _userManager.AddClaimAsync(identityUser, tenant.ToClaim());
 
             var appUser = _mapper.Map<ApplicationUser>(userRegistration);
-            appUser.AssignTenant(tenantId);
+            appUser.AssignTenant(tenant);
 
             _unitOfWork.ApplicationUser.Create(appUser);
 
             await _unitOfWork.SaveChangesAsync();
 
-            var claims = GenerateClaimsForUser(
-                identityUser.Id,
-                identityUser.UserName!,
-                identityUser.Email!,
-                tenantId);
+            var claims = _tenantService.GenerateClaimsForUser(identityUser, tenant);
 
             var accessToken = _jwtService.CreateToken(claims);
 
             return new TokenResponse(accessToken, refreshToken);
         }
-
-        private List<Claim> GenerateClaimsForUser(
-            string id, 
-            string username, 
-            string email,
-            Guid tenantId)
-        {
-            return new List<Claim>()
-            {
-               new (JwtClaimTypes.Subject, id),
-               new (JwtClaimTypes.Name, username),
-               new (JwtClaimTypes.Email, email),
-               new (TenantClaimName, tenantId.ToString())
-            };
-        }
-
 
         public async Task<TokenResponse> RefreshTokenAsync(TokenRefreshRequest tokenRefreshRequest)
         {
@@ -165,17 +143,13 @@ namespace Application.Services
                 throw new RefreshTokenExpiredException();
             }
 
-            var userTenantClaim  = await GetTenantFromUser(user);
+            var userTenantClaim = await _tenantService.GetTenantFromUser(user);
             var tenantId = Guid.Parse(userTenantClaim!.Value);
 
-            var claims = GenerateClaimsForUser(
-                user.Id,
-                user.UserName!,
-                user.Email!,
-                tenantId);
+            var claims = _tenantService.GenerateClaimsForUser(user, tenantId);
 
             var accessToken = _jwtService.CreateToken(claims);
-            var (refreshToken, _) = _jwtService.GenerateRefreshTokenAndExpiryTime();
+            var refreshToken = _jwtService.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
 
@@ -183,14 +157,5 @@ namespace Application.Services
 
             return new TokenResponse(accessToken, refreshToken);
         }
-
-        private async Task<Claim?> GetTenantFromUser(UserAuth user)
-        {
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var userTenant = userClaims.FirstOrDefault(c => c.Type == TenantClaimName);
-
-            return userTenant;
-        }
-
     }
 }

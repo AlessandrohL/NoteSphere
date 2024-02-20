@@ -11,6 +11,7 @@ namespace Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<IAuthenticationService<UserAuth>, AuthenticationService>();
             services.AddScoped<IApplicationUserService, ApplicationUserService>();
             services.AddScoped<INotebookService, NotebookService>();

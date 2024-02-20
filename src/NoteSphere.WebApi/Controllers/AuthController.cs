@@ -23,13 +23,6 @@ namespace WebApi.Controllers
         [RemoveAuthorizationHeader]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
         {
-            var headers = HttpContext.Request.Headers;
-
-            if (userRegistration is null)
-            {
-                return BadRequest();
-            }
-
             var tokenResponse = await _authenticationService.RegisterUserAsync(userRegistration);
 
             return Ok(SuccessResponse<TokenResponse>.Ok(tokenResponse));
@@ -39,8 +32,6 @@ namespace WebApi.Controllers
         [RemoveAuthorizationHeader]
         public async Task<IActionResult> LoginUser([FromBody] UserLoginDto userLogin)
         {
-            var headers = HttpContext.Request.Headers;
-
             var tokenResponse = await _authenticationService.LoginUserAsync(userLogin);
 
             return Ok(SuccessResponse<TokenResponse>.Ok(tokenResponse));
