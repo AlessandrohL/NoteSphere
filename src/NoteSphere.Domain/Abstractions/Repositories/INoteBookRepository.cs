@@ -10,14 +10,16 @@ namespace Domain.Abstractions.Repositories
 {
     public interface INotebookRepository : IRepositoryBase<Notebook, Guid>
     {
-        Task<List<Notebook>> FindNotebooksAsync(NotebooksFilter filter);
-        Task<Notebook?> FindNotebookById(
+        Task<List<Notebook>> FindNotebooksAsync(
+            NotebooksFilter filter, 
+            CancellationToken cancellationToken);
+        Task<Notebook?> FindNotebookByIdAsync(
             Guid id,
             bool trackChanges,
+            CancellationToken cancellationToken,
             bool ignoreQueryFilter = false);
-        Task<bool> IsNotebookExistsAsync(Guid applicationUserId);
-        //Task<bool> IsNotebookDeletedAsync(Guid applicationUserId, Guid id);
 
+        Task<bool> IsNotebookExistsAsync(Guid id, CancellationToken cancellationToken);
     }
 
 }

@@ -10,11 +10,15 @@ namespace Domain.Abstractions.Repositories
 {
     public interface INoteRepository : IRepositoryBase<Note, Guid>
     {
-        Task<List<Note>> FindNotesAsync(NotesFilter request, Guid notebookId);
-        Task<Note?> FindNoteAsync(
+        Task<List<Note>> FindNotesAsync(
+            NotesFilter request,
+            Guid notebookId,
+            CancellationToken cancellationToken);
+        Task<Note?> FindNoteByIdAsync(
             Guid id,
             Guid notebookId,
             bool trackChanges,
-            bool ignoreQueryFilter);
+            bool ignoreQueryFilter,
+            CancellationToken cancellationToken);
     }
 }

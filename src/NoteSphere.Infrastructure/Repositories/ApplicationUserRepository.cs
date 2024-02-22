@@ -10,29 +10,38 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class ApplicationUserRepository : RepositoryBase<ApplicationUser, Guid>, IApplicationUserRepository
+    public class ApplicationUserRepository : 
+        RepositoryBase<ApplicationUser, Guid>, 
+        IApplicationUserRepository
     {
         public ApplicationUserRepository(ApplicationDbContext context)
             : base(context)
         { }
 
-        public async Task<ApplicationUser?> FindUserByTenantAsync(Guid tenantId, bool trackChanges)
+        public async Task<ApplicationUser?> FindUserByTenantAsync(
+            Guid tenantId, 
+            bool trackChanges,
+            CancellationToken cancellationToken = default)
         {
             return await FindByCondition(u => u.TenantId == tenantId, trackChanges)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<Guid> FindUserIdByTenantAsync(Guid tenantId)
+        public async Task<Guid> FindUserIdByTenantAsync(
+            Guid tenantId, 
+            CancellationToken cancellationToken = default)
         {
             return await FindByCondition(u => u.TenantId == tenantId, false)
                 .Select(u => u.Id)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<bool> IsUserExistsByTenantAsync(Guid tenantId)
+        public async Task<bool> IsUserExistsByTenantAsync(
+            Guid tenantId, 
+            CancellationToken cancellationToken = default)
         {
             return await FindByCondition(u => u.TenantId == tenantId, false)
-                .AnyAsync();
+                .AnyAsync(cancellationToken);
         }
     }
 }

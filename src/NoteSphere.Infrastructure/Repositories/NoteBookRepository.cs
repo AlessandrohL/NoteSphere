@@ -19,30 +19,34 @@ namespace Infrastructure.Repositories
         { }
 
         public async Task<List<Notebook>> FindNotebooksAsync(
-            NotebooksFilter filter)
+            NotebooksFilter filter,
+            CancellationToken cancellationToken = default)
         {
             var queryBase = FindAll(trackChanges: false);
             var filteredQuery = NotebookQuery.Generate(queryBase, filter);
 
-            return await filteredQuery.ToListAsync();
+            return await filteredQuery.ToListAsync(cancellationToken);
         }
 
-        public async Task<Notebook?> FindNotebookById(
+        public async Task<Notebook?> FindNotebookByIdAsync(
             Guid id,
             bool trackChanges,
+            CancellationToken cancellationToken = default,
             bool ignoreQueryFilter = false)
         {
             var query = FindByCondition(nb => nb.Id == id, trackChanges);
 
             return ignoreQueryFilter
-                ? await query.IgnoreQueryFilters().FirstOrDefaultAsync()
-                : await query.FirstOrDefaultAsync();
+                ? await query.IgnoreQueryFilters().FirstOrDefaultAsync(cancellationToken)
+                : await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<bool> IsNotebookExistsAsync(Guid id)
+        public Task<bool> IsNotebookExistsAsync(
+            Guid id,
+            CancellationToken cancellationToken = default)
         {
             return FindByCondition(nb => nb.Id == id, trackChanges: false)
-                .AnyAsync();
+                .AnyAsync(cancellationToken);
         }
 
     }

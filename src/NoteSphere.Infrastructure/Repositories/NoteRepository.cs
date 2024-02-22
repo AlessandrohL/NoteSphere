@@ -18,29 +18,33 @@ namespace Infrastructure.Repositories
             : base(context)
         { }
 
-        public Task<List<Note>> FindNotesAsync(NotesFilter request, Guid notebookId)
+        public Task<List<Note>> FindNotesAsync(
+            NotesFilter request,
+            Guid notebookId,
+            CancellationToken cancellationToken = default)
         {
             var queryBase = FindAll(trackChanges: false)
                 .Where(n => n.NotebookId == notebookId);
 
             var filteredQuery = NotesQuery.Generate(queryBase, request);
 
-            return filteredQuery.ToListAsync();
+            return filteredQuery.ToListAsync(cancellationToken);
         }
 
-        public async Task<Note?> FindNoteAsync(
+        public async Task<Note?> FindNoteByIdAsync(
             Guid id,
             Guid notebookId,
             bool trackChanges,
-            bool ignoreQueryFilter = false)
+            bool ignoreQueryFilter = false,
+            CancellationToken cancellationToken = default)
         {
             var query = FindByCondition(n =>
                 (n.NotebookId == notebookId && n.Id == id),
                 trackChanges);
 
             return ignoreQueryFilter
-                ? await query.IgnoreQueryFilters().FirstOrDefaultAsync()
-                : await query.FirstOrDefaultAsync();
+                ? await query.IgnoreQueryFilters().FirstOrDefaultAsync(cancellationToken)
+                : await query.FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

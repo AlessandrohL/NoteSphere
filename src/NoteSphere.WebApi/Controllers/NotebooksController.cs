@@ -27,26 +27,37 @@ namespace WebApi.Controllers
 
         [HttpGet]
         public async Task<ActionResult<List<NotebookDto>>> GetNotebooks(
-            [FromQuery] NotebooksFilter noteBooksFilter)
+            [FromQuery] NotebooksFilter noteBooksFilter, 
+            CancellationToken cancellationToken)
         {
-            var notebooks = await _notebookService.GetAllNotebooksAsync(noteBooksFilter);
+            var notebooks = await _notebookService.GetAllNotebooksAsync(
+                filter: noteBooksFilter,
+                cancellationToken: cancellationToken);
 
             return Ok(SuccessResponse<List<NotebookDto>>.Ok(notebooks));
         }
 
         [HttpGet("{id:guid}", Name = "GetNotebook")]
-        public async Task<IActionResult> GetNotebook(Guid id)
+        public async Task<IActionResult> GetNotebook(
+            Guid id, 
+            CancellationToken cancellationToken)
         {
-            var notebook = await _notebookService.GetNotebookByIdAsync(id);
+            var notebook = await _notebookService.GetNotebookByIdAsync(
+                id,
+                cancellationToken);
 
             return Ok(SuccessResponse<NotebookDto>.Ok(notebook));
         }
 
         // probar con ActionResult<NotebookDto>
         [HttpPost]
-        public async Task<IActionResult> CreateNotebook([FromBody] CreateNotebookDto noteBookDto)
+        public async Task<IActionResult> CreateNotebook(
+            [FromBody] CreateNotebookDto createNotebookDto,
+            CancellationToken cancellationToken)
         {
-            var notebookCreated = await _notebookService.CreateNotebookAsync(noteBookDto);
+            var notebookCreated = await _notebookService.CreateNotebookAsync(
+                createNotebookDto,
+                cancellationToken);
 
             return CreatedAtRoute(
                 nameof(GetNotebook),
@@ -57,25 +68,33 @@ namespace WebApi.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateNotebook(
             Guid id,
-            [FromBody] UpdateNotebookDto notebookDto)
+            [FromBody] UpdateNotebookDto updateNotebookDto,
+            CancellationToken cancellationToken)
         {
-            var updatedNotebook = await _notebookService.UpdateNotebookAsync(id, notebookDto);
+            var updatedNotebook = await _notebookService.UpdateNotebookAsync(
+                id, 
+                updateNotebookDto,
+                cancellationToken);
 
             return Ok(SuccessResponse<NotebookDto>.Ok(updatedNotebook));
         }
 
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> SoftDeleteNotebook(Guid id)
+        public async Task<IActionResult> SoftDeleteNotebook(
+            Guid id,
+            CancellationToken cancellationToken)
         {
-            await _notebookService.SoftDeleteNotebookAsync(id);
+            await _notebookService.SoftDeleteNotebookAsync(id, cancellationToken);
 
             return Ok(SuccessResponse<bool>.Ok(false));
         }
 
         [HttpPost("{id:guid}/recover")]
-        public async Task<IActionResult> RecoverNotebook(Guid id)
+        public async Task<IActionResult> RecoverNotebook(
+            Guid id, 
+            CancellationToken cancellationToken)
         {
-            await _notebookService.RecoverNotebookAsync(id);
+            await _notebookService.RecoverNotebookAsync(id, cancellationToken);
 
             return Ok(SuccessResponse<bool>.Ok(false));
         }

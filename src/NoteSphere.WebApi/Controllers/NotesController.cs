@@ -12,7 +12,7 @@ namespace WebApi.Controllers
     [ApiController]
     [Route("api/notebooks/{notebookId:guid}/notes")]
     [Authorize]
-    [ValidateGuid]
+    [ValidateGuid] 
     public class NotesController : ControllerBase
     {
         private readonly INoteService _noteService;
@@ -25,9 +25,11 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNotes(
             Guid notebookId,
-            [FromQuery] NotesFilter request)
+            [FromQuery] NotesFilter request,
+            CancellationToken cancellationToken)
         {
-            var notes = await _noteService.GetAllNotesAsync(notebookId, request);
+            var notes = await _noteService
+                .GetAllNotesAsync(notebookId, request, cancellationToken);
 
             return Ok(SuccessResponse<List<NoteDto>>.Ok(notes));
         }
@@ -35,9 +37,11 @@ namespace WebApi.Controllers
         [HttpGet("{id:guid}", Name = nameof(GetNote))]
         public async Task<IActionResult> GetNote(
             Guid notebookId,
-            Guid id)
+            Guid id, 
+            CancellationToken cancellationToken)
         {
-            var note = await _noteService.GetNoteByIdAsync(notebookId, id);
+            var note = await _noteService
+                .GetNoteByIdAsync(notebookId, id, cancellationToken);
 
             return Ok(SuccessResponse<NoteDto>.Ok(note));
         }
@@ -45,9 +49,11 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateNote(
             Guid notebookId,
-            [FromBody] CreateNoteDto createNoteDto)
+            [FromBody] CreateNoteDto createNoteDto, 
+            CancellationToken cancellationToken)
         {
-            var note = await _noteService.CreateNoteAsync(notebookId, createNoteDto);
+            var note = await _noteService
+                .CreateNoteAsync(notebookId, createNoteDto, cancellationToken);
 
             return CreatedAtRoute(
                 nameof(GetNote),

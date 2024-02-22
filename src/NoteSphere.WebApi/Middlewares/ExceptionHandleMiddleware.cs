@@ -45,7 +45,7 @@ namespace WebApi.Middlewares
             }
         }
 
-        private List<string> GetErrorMessages(Exception ex, out int statusCode)
+        private static List<string> GetErrorMessages(Exception ex, out int statusCode)
         {
             switch (ex)
             {

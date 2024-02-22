@@ -9,9 +9,16 @@ namespace Domain.Abstractions.Repositories
 {
     public interface IApplicationUserRepository : IRepositoryBase<ApplicationUser, Guid>
     {
-        Task<ApplicationUser?> FindUserByTenantAsync(Guid tenantId, bool trackChanges);
-        Task<Guid> FindUserIdByTenantAsync(Guid tenantId);
-        Task<bool> IsUserExistsByTenantAsync(Guid tenantId);
+        Task<ApplicationUser?> FindUserByTenantAsync(
+            Guid tenantId, 
+            bool trackChanges, 
+            CancellationToken cancellationToken);
+        Task<Guid> FindUserIdByTenantAsync(
+            Guid tenantId,
+            CancellationToken cancellationToken);
+        Task<bool> IsUserExistsByTenantAsync(
+            Guid tenantId,
+            CancellationToken cancellationToken);
 
     }
 }

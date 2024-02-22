@@ -22,7 +22,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "My Note 1",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-10),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -30,7 +29,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "Example",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-5),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -38,7 +36,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "Oya",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-3),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -46,7 +43,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "Abstractation",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-4),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -54,7 +50,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "Games",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-7),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -62,7 +57,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "Courses",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-2),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -70,7 +64,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "How to...",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-4),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -78,7 +71,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "ASP.NET Core Middlewares",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-4),
-                    AppUserId = new Guid(),
                 },
                 new()
                 {
@@ -86,7 +78,6 @@ namespace NoteSphere.Application.UnitTests.Querys
                     Title = "ASP.NET Core Caching",
                     Description = "This is my note",
                     CreatedAt = DateTime.UtcNow.AddDays(-4),
-                    AppUserId = new Guid(),
                 },
                 
             };

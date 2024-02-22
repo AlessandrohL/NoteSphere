@@ -8,6 +8,7 @@ using Application.Helpers;
 using Application.Identity;
 using AutoMapper;
 using Domain.Abstractions;
+using Domain.Abstractions.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -21,6 +22,7 @@ namespace Application.Services
 {
     public class AuthenticationService : IAuthenticationService<UserAuth>
     {
+        private readonly IApplicationUserRepository _applicationUserRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<UserAuth> _userManager;
         private readonly IJwtService _jwtService;
@@ -28,20 +30,24 @@ namespace Application.Services
         private readonly IMapper _mapper;
 
         public AuthenticationService(
-            UserManager<UserAuth> userManager,
+            IApplicationUserRepository applicationUserRepository,
             IUnitOfWork unitOfWork,
+            UserManager<UserAuth> userManager,
             IJwtService jwtService,
-            IMapper mapper,
-            ITenantService tenantService)
+            ITenantService tenantService,
+            IMapper mapper)
         {
-            _userManager = userManager;
+            _applicationUserRepository = applicationUserRepository;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
             _jwtService = jwtService;
             _mapper = mapper;
             _tenantService = tenantService;
         }
 
-        public async Task<TokenResponse> LoginUserAsync(UserLoginDto userLogin)
+        public async Task<TokenResponse> LoginUserAsync(
+            UserLoginDto userLogin, 
+            CancellationToken cancellationToken)
         {
             var identityUser = await _userManager
                 .FindByEmailAsync(userLogin.Email!);
@@ -77,7 +83,8 @@ namespace Application.Services
         }
 
         public async Task<TokenResponse> RegisterUserAsync(
-            UserRegistrationDto userRegistration)
+            UserRegistrationDto userRegistration,
+            CancellationToken cancellationToken)
         {
             var identityUser = _mapper.Map<UserAuth>(userRegistration);
 
@@ -87,29 +94,41 @@ namespace Application.Services
             identityUser.RefreshToken = refreshToken;
             identityUser.RefreshTokenExpiryTime = refreshTokenExpiration;
 
-            var identityResult = await _userManager.CreateAsync(
+            var tenant = _tenantService.CreateTenant();
+
+            using var transaction = _unitOfWork.BeginTransaction();
+
+            try
+            {
+                var identityResult = await _userManager.CreateAsync(
                 identityUser,
                 userRegistration.Password!);
 
-            if (!identityResult.Succeeded)
-            {
-                var errors = identityResult.Errors
-                    .Select(e => e.Description)
-                    .ToList();
+                if (!identityResult.Succeeded)
+                {
+                    var errors = identityResult.Errors
+                        .Select(e => e.Description)
+                        .ToList();
 
-                throw new IdentityUserValidationException(errors);
+                    throw new IdentityUserValidationException(errors);
+                }
+
+                await _userManager.AddClaimAsync(identityUser, tenant.ToClaim());
+
+                var appUser = _mapper.Map<ApplicationUser>(userRegistration);
+                appUser.AssignTenant(tenant);
+
+                _applicationUserRepository.Create(appUser);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                transaction.Commit();
             }
-
-            var tenant = _tenantService.CreateTenant();
-
-            await _userManager.AddClaimAsync(identityUser, tenant.ToClaim());
-
-            var appUser = _mapper.Map<ApplicationUser>(userRegistration);
-            appUser.AssignTenant(tenant);
-
-            _unitOfWork.ApplicationUser.Create(appUser);
-
-            await _unitOfWork.SaveChangesAsync();
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
 
             var claims = _tenantService.GenerateClaimsForUser(identityUser, tenant);
 
@@ -118,7 +137,9 @@ namespace Application.Services
             return new TokenResponse(accessToken, refreshToken);
         }
 
-        public async Task<TokenResponse> RefreshTokenAsync(TokenRefreshRequest tokenRefreshRequest)
+        public async Task<TokenResponse> RefreshTokenAsync(
+            TokenRefreshRequest tokenRefreshRequest,
+            CancellationToken cancellationToken)
         {
             var claimsIdentity = await _jwtService
                 .ValidateTokenAsync(tokenRefreshRequest.AccessToken!);
