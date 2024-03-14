@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace Application.Exceptions
 {
-    public sealed class InvalidRefreshTokenException
-        : BadRequestException
+    public sealed class RefreshTokenNotSetException : BadRequestException
     {
-        public InvalidRefreshTokenException()
+        public RefreshTokenNotSetException()
             : base(key: "RefreshToken", new string[] 
             { 
-                "The refresh token provided is invalid." 
+                "User does not have a refresh token set." 
             })
         { }
     }

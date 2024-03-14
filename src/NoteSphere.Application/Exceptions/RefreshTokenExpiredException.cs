@@ -11,7 +11,10 @@ namespace Application.Exceptions
         : BadRequestException
     {
         public RefreshTokenExpiredException()
-            : base("The refresh token has expired. Please log in again to obtain a new token.")
+            : base(key: "RefreshToken", new string[] 
+            { 
+                "The refresh token has expired. Please log in again to obtain a new token." 
+            })
         { }
     }
 }

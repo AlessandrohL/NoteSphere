@@ -1,13 +1,17 @@
 ﻿using Application.Abstractions;
+using Application.Helpers;
 using Application.Identity;
 using Domain.Abstractions;
 using Domain.Abstractions.Repositories;
 using Infrastructure.Data.Contexts;
+using Infrastructure.Email;
 using Infrastructure.Helpers;
-using Infrastructure.Identity;
+using Infrastructure.Identity.Extensions;
 using Infrastructure.Identity.Jwt;
 using Infrastructure.Repositories;
 using Infrastructure.UnitOfWorks;
+using Infrastructure.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,13 +38,24 @@ namespace Infrastructure
             {
                 options.Password.RequireLowercase = false;
                 options.Password.RequiredLength = 8;
-
                 options.User.RequireUniqueEmail = true;
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
+            var emailConfig = configuration
+                .GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+
+            var clientConfig = configuration
+                .GetSection("ClientConfiguration")
+                .Get<ClientConfig>();
+
+            services.AddSingleton(emailConfig!);
+            services.AddSingleton(clientConfig!);
             services.AddSingleton<JwtConfigHelper>();
 
+            services.AddScoped<IUserManagerExtensions<UserAuth>, UserManagerExtensions>();
             services.AddScoped<INotebookRepository, NotebookRepository>();
             services.AddScoped<INoteRepository, NoteRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
@@ -49,8 +64,10 @@ namespace Infrastructure
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IJwtService, JwtService>();
-
-
+            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUrlUtility, UrlUtility>();
+            
             return services;
         }
     }

@@ -11,11 +11,14 @@ namespace Application.Exceptions
         : BadRequestException
     {
         public InvalidAccessTokenException()
-            : base("The access token provided is invalid.")
+            : base(key: "AccessToken", new string[] 
+            { 
+                "The access token provided is invalid." 
+            })
         { }
 
         public InvalidAccessTokenException(string message)
-            : base(message)
+            : base(key: "AccessToken", new string[] { message })
         { }
     }
 }

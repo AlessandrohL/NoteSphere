@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace Application.Exceptions
 {
-    public sealed class IdentityUserValidationException
-        : ValidationException
+    public sealed class UserAlreadyExistsException : UnprocessableException
     {
-        public IdentityUserValidationException(List<string> errors) 
-            : base(errors)
+        public UserAlreadyExistsException(IEnumerable<string> errors)
+            : base("User", errors)
         { }
     }
 }

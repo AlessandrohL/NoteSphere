@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Application.Exceptions
 {
-    public class IdentityUserNotFoundException : NotFoundException
+    public sealed class IdentityUserNotFoundException : NotFoundException
     {
         public IdentityUserNotFoundException()
-            :base("Account not found. Please register or verify your credentials.")
+            : base(key: "User", errors: new string[] { 
+                "Account not found. Please register or verify your credentials." 
+            })
         { }
     }
 }
