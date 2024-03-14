@@ -25,7 +25,7 @@ namespace Infrastructure.Helpers
 
         public string? GetSecurityKey() => _config["JwtSettings:Secret"];
 
-        public byte[] GetSymmetricSecurityKeyAsBytes() => Encoding.UTF8.GetBytes(GetSecurityKey());
+        public byte[] GetSymmetricSecurityKeyAsBytes() => Encoding.UTF8.GetBytes(GetSecurityKey()!);
 
         public SymmetricSecurityKey GetSymmetricSecurityKey()
             => new(GetSymmetricSecurityKeyAsBytes());
@@ -35,5 +35,9 @@ namespace Infrastructure.Helpers
 
         public double GetRefreshTokenValidityDays()
             => Convert.ToDouble(_config["JwtSettings:RefreshTokenLifetimeDays"]);
+
+        public string? GetCookieName() => _config["JwtSettings:CookieName"];
+        public double GetCookieExpirationDays()
+            => Convert.ToDouble(_config["JwtSettings:CookieLifetimeDays"]);
     }
 }

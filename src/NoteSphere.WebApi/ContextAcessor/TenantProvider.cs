@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions;
+using Infrastructure.Helpers;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.Constants;
 
 namespace WebApi.ContextAcessor
 {
@@ -7,28 +9,36 @@ namespace WebApi.ContextAcessor
     {
         private readonly IJwtService _jwtService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly JwtConfigHelper _jwtConfigHelper;
+        private const string TenantClaimType = "tenantId";
 
-        public TenantProvider(IJwtService jwtService, IHttpContextAccessor httpContextAccessor)
+        public TenantProvider(
+            IJwtService jwtService, 
+            IHttpContextAccessor httpContextAccessor, 
+            JwtConfigHelper jwtConfigHelper)
         {
             _jwtService = jwtService;
             _httpContextAccessor = httpContextAccessor;
+            _jwtConfigHelper = jwtConfigHelper;
         }
 
         public Guid GetTenantId()
         {
+            var cookieName = _jwtConfigHelper.GetCookieName();
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (httpContext is null || httpContext.Request.Headers["Authorization"].IsNullOrEmpty())
+            if (httpContext is null || httpContext.Request.Cookies[cookieName!]
+                .IsNullOrEmpty())
             {
                 return Guid.Empty;
             }
 
-            string accessToken = _httpContextAccessor.HttpContext?
+            string accessToken = httpContext
                 .Request
-                .Headers["Authorization"]!;
+                .Cookies[cookieName!]!;
 
-            var claims = _jwtService.ValidateToken(accessToken);
-            var tenantClaim = claims.FindFirst("tenantId");
+            var claims = _jwtService.GetClaimsFromToken(accessToken)?.ToList();
+            var tenantClaim = claims?.FirstOrDefault(c => c.Type == TenantClaimType);
 
             if (tenantClaim == null || string.IsNullOrEmpty(tenantClaim.Value)
                 || !Guid.TryParse(tenantClaim.Value, out Guid tenantId))

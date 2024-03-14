@@ -52,13 +52,21 @@ namespace Infrastructure.Identity.Jwt
                 throw new Exception("Access token cannot be null or empty");
             }
 
-            accessToken = accessToken.Substring(7);
-
             var tokenValidationParameters = GetValidationParameters();
             var tokenHandler = new JwtSecurityTokenHandler();
 
+            var testaw = tokenHandler.ReadJwtToken(accessToken).Payload.Claims;
+
             var claims = tokenHandler
                 .ValidateToken(accessToken, tokenValidationParameters, out var _);
+
+            return claims;
+        }
+
+        public IEnumerable<Claim>? GetClaimsFromToken(string accessToken)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var claims = tokenHandler.ReadJwtToken(accessToken).Payload.Claims;
 
             return claims;
         }
