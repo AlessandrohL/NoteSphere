@@ -15,9 +15,10 @@ namespace WebApi.Helpers
                 StatusCodes.Status404NotFound => HttpMessages.NotFound,
                 StatusCodes.Status403Forbidden => HttpMessages.Forbidden,
                 StatusCodes.Status401Unauthorized => HttpMessages.Unauthorized,
+                StatusCodes.Status422UnprocessableEntity => HttpMessages.UnprocessableEntity,
                 StatusCodes.Status500InternalServerError => HttpMessages.InternalServerError,
                 _ => "Unknown error."
-            }; ;
+            };
         }
     }
 }

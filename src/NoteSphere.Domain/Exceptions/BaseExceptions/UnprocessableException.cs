@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions.BaseExceptions
 {
-    public abstract class UnauthorizedException : Exception
+    public abstract class UnprocessableException : Exception
     {
         public Dictionary<string, IEnumerable<string>> Errors { get; init; }
 
-        public UnauthorizedException(string key, IEnumerable<string> errors)
+        public UnprocessableException(string key, IEnumerable<string> errors)
             : base()
         {
             Errors = new() { { key, errors } };

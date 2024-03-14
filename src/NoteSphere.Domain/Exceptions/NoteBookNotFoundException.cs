@@ -10,7 +10,10 @@ namespace Domain.Exceptions
     public sealed class NotebookNotFoundException : NotFoundException
     {
         public NotebookNotFoundException(Guid id)
-            : base($"The Notebook with Id '{id}' was not found")
+            : base(key: "Notebook", new string[]
+            {
+                $"The Notebook with Id '{id}' was not found"
+            })
         { }
     }
 }

@@ -9,5 +9,6 @@
         public const string Forbidden = "You do not have permission to access the resource.";
         public const string Unauthorized = "Authentication is required to access the resource.";
         public const string InternalServerError = "An internal server error occurred.";
+        public const string UnprocessableEntity = "The entity could not be processed.";
     }
 }

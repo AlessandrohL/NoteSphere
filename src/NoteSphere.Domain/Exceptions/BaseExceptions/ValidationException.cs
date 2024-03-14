@@ -8,12 +8,12 @@ namespace Domain.Exceptions.BaseExceptions
 {
     public abstract class ValidationException : Exception
     {
-        public List<string> Errors { get; set; }
+        public Dictionary<string, IEnumerable<string>> Errors { get; init; }
 
-        public ValidationException(List<string> errors)
-            : base("One or more validation errors occurred.")
+        public ValidationException(string key, IEnumerable<string> errors)
+            : base()
         {
-            Errors = errors;
+            Errors = new () { { key, errors } };
         }
     }
 }

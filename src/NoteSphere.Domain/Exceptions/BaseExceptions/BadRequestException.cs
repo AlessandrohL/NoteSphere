@@ -8,18 +8,12 @@ namespace Domain.Exceptions.BaseExceptions
 {
     public abstract class BadRequestException : Exception
     {
-        public List<string> Errors { get; }
+        public Dictionary<string, IEnumerable<string>> Errors { get; init; }
 
-        public BadRequestException(string message)
-            : base(message)
-        {
-            Errors = new() { message };
-        }
-
-        public BadRequestException(List<string> errors)
+        public BadRequestException(string key, IEnumerable<string> errors)
             : base()
         {
-            Errors = errors;
+            Errors = new() { { key, errors } };
         }
     }
 }

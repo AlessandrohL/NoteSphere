@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Domain.Exceptions.BaseExceptions;
+using Microsoft.AspNetCore.Mvc;
 using WebApi.Common;
 using WebApi.Constants;
 using WebApi.Helpers;
@@ -28,24 +29,24 @@ namespace WebApi.Middlewares
             catch (Exception ex)
             {
                 var response = context.Response;
-                response.ContentType = "application/json";
 
-                var errors = GetErrorMessages(ex, out int statusCode);
-                response.StatusCode = statusCode;
-
+                var errors = GetErrorsFromException(ex, out int statusCode);
                 var title = HttpStatusHelper.GetTitleByStatusCode(statusCode);
 
-                var errorResponse = new ErrorResponse(
+                response.StatusCode = statusCode;
+
+                var errorResponse = new ErrorResponseTwo(
                     title,
                     errors,
                     response.StatusCode);
 
                 await response.WriteAsJsonAsync(errorResponse);
-
             }
         }
 
-        private static List<string> GetErrorMessages(Exception ex, out int statusCode)
+        private static Dictionary<string, IEnumerable<string>> GetErrorsFromException(
+            Exception ex, 
+            out int statusCode)
         {
             switch (ex)
             {
@@ -65,9 +66,13 @@ namespace WebApi.Middlewares
                     statusCode = StatusCodes.Status401Unauthorized;
                     return e.Errors;
 
+                case UnprocessableException e:
+                    statusCode = StatusCodes.Status422UnprocessableEntity;
+                    return e.Errors;
+
                 default:
                     statusCode = StatusCodes.Status500InternalServerError;
-                    return new() { "Internal Server Error" };
+                    return new() { { "Server", new string[] { "Internal Server Error" } } };
             }
         }
     }
