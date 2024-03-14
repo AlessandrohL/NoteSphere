@@ -14,7 +14,6 @@ namespace Application.Services
 {
     public class TenantService : ITenantService
     {
-        public const string TenantClaimName = "tenantId";
         private readonly UserManager<UserAuth> _userManager;
 
         public TenantService(UserManager<UserAuth> userManager)
@@ -36,20 +35,8 @@ namespace Application.Services
                 return null;
             }
 
-            var userTenant = userClaims.FirstOrDefault(c => c.Type == TenantClaimName);
-
+            var userTenant = userClaims.FirstOrDefault(c => c.Type == GeneralClaimTypes.Tenant);
             return userTenant;
-        }
-
-        public List<Claim> GenerateClaimsForUser(IUserWithIdentityFeatures user, Guid tenantId)
-        {
-            return new List<Claim>()
-            {
-               new (JwtClaimTypes.Subject, user.Id),
-               new (JwtClaimTypes.Name, user.UserName!),
-               new (JwtClaimTypes.Email, user.Email!),
-               new (TenantClaimName, tenantId.ToString())
-            };
         }
 
         public Guid CreateTenant() => Guid.NewGuid();
@@ -58,6 +45,6 @@ namespace Application.Services
     public static class TenantExtensions
     {
         public static Claim ToClaim(this Guid tenantId)
-            => new (TenantService.TenantClaimName, tenantId.ToString());
+            => new (GeneralClaimTypes.Tenant, tenantId.ToString());
     }
 }

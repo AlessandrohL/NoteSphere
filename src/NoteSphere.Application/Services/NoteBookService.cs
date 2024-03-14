@@ -1,12 +1,9 @@
 ﻿using Application.Abstractions;
-using Application.Common;
 using Application.DTOs.Notebook;
-using Application.Errors;
 using AutoMapper;
 using Domain.Abstractions;
 using Domain.Abstractions.Repositories;
 using Domain.Entities;
-using Domain.Errors;
 using Domain.Exceptions;
 using Domain.Filters;
 using System;

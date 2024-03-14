@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Identity;
 using Application.Services;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -16,6 +17,9 @@ namespace Application
             services.AddScoped<IApplicationUserService, ApplicationUserService>();
             services.AddScoped<INotebookService, NotebookService>();
             services.AddScoped<INoteService, NoteService>();
+
+            ValidatorOptions.Global.LanguageManager.Enabled = false;
+            services.AddValidatorsFromAssembly(ApplicationAssemblyReference.Assembly);
 
             return services;
         }

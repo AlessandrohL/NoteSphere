@@ -3,7 +3,6 @@ using Application.Identity;
 using Domain.Abstractions;
 using Domain.Entities;
 using Infrastructure.Data.Configurations;
-using Infrastructure.Identity;
 using Infrastructure.Identity.Configuration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -140,7 +139,7 @@ namespace Infrastructure.Data.Contexts
             }
         }
 
-        private LambdaExpression CombineQueryFilters(
+        private static LambdaExpression CombineQueryFilters(
             Type entityType,
             LambdaExpression baseFilter, 
             IEnumerable<LambdaExpression> andAlsoExpressions)

@@ -1,9 +1,6 @@
 ﻿using Application.Abstractions;
-using Application.Common;
-using Application.Errors;
 using Domain.Abstractions;
 using Domain.Abstractions.Repositories;
-using Domain.Errors;
 using Domain.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -26,10 +23,10 @@ namespace Application.Services
             _applicationUserRepository = applicationUserRepository;
         }
 
-        public async Task<Guid> GetUserIdByTenantAsync(Guid tenantId)
+        public async Task<Guid> GetUserIdByTenantAsync(Guid tenantId, CancellationToken cancellationToken)
         {
             var appUserId = await _applicationUserRepository
-                .FindUserIdByTenantAsync(tenantId);
+                .FindUserIdByTenantAsync(tenantId, cancellationToken);
 
             if (appUserId == Guid.Empty)
             {

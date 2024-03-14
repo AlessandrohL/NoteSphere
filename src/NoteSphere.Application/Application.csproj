@@ -8,13 +8,17 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="7.0.14" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="7.0.14" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NoteSphere.Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Validators\Tokens\" />
   </ItemGroup>
 
 </Project>

@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Application.DTOs.Token
 {
-    public class AssemblyReference
-    {
-    }
+    public record TokensResponse(string AccessToken, string RefreshToken);
 }

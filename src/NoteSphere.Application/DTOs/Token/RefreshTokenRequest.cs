@@ -7,12 +7,8 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs.Token
 {
-    public record TokenRefreshRequest
+    public record RefreshTokenRequest
     {
-        [Required(ErrorMessage = "Access token is required.")]
-        public string? AccessToken { get; init; }
-
-        [Required(ErrorMessage = "A refresh token is required.")]
         public string? RefreshToken { get; init; }
     }
 }

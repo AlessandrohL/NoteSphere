@@ -54,7 +54,7 @@ namespace WebApi.Controllers
         {
             var note = await _noteService
                 .CreateNoteAsync(notebookId, createNoteDto, cancellationToken);
-
+            
             return CreatedAtRoute(
                 nameof(GetNote),
                 new { notebookId, id = note.Id },

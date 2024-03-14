@@ -14,6 +14,7 @@ namespace Application.Abstractions
         DateTime GenerateExpirationDateForRefreshToken();
         ClaimsPrincipal ValidateToken(string accessToken);
         Task<ClaimsIdentity> ValidateTokenAsync(string accessToken);
+        IEnumerable<Claim>? GetClaimsFromToken(string accessToken);
 
     }
 }

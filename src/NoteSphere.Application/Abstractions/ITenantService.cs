@@ -11,9 +11,6 @@ namespace Application.Abstractions
     public interface ITenantService
     {
         Task<Claim?> GetTenantFromUser(IUserWithIdentityFeatures user);
-        List<Claim> GenerateClaimsForUser(
-            IUserWithIdentityFeatures user, 
-            Guid tenantId);
         Guid CreateTenant();
     }
 }

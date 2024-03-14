@@ -1,28 +1,39 @@
 ﻿using Application.Abstractions;
 using Application.DTOs.Notebook;
+using Application.Validators.Notebook;
 using Domain.Filters;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.ActionFilters;
 using WebApi.Common;
 using WebApi.ContextAcessor;
+using WebApi.Extensions;
 
 namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    [EnableCors("CorsPolicy")]
     [Authorize]
     [ValidateGuid]
+    [ApiController]
     public class NotebooksController : ControllerBase
     {
         private readonly INotebookService _notebookService;
+        private readonly IValidator<CreateNotebookDto> _createValidator;
+        private readonly IValidator<UpdateNotebookDto> _updateValidator;
         private readonly UserContextAccessor _userContext;
         public NotebooksController(
             INotebookService notebookService,
-            UserContextAccessor userContext)
+            UserContextAccessor userContext,
+            IValidator<CreateNotebookDto> createValidator,
+            IValidator<UpdateNotebookDto> updateValidator)
         {
             _notebookService = notebookService;
             _userContext = userContext;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         [HttpGet]
@@ -55,6 +66,14 @@ namespace WebApi.Controllers
             [FromBody] CreateNotebookDto createNotebookDto,
             CancellationToken cancellationToken)
         {
+            var result = _createValidator.Validate(createNotebookDto);
+
+            if (!result.IsValid)
+            {
+                result.AddValidationToModelState(ModelState);
+                return ValidationProblem(ModelState);
+            }
+
             var notebookCreated = await _notebookService.CreateNotebookAsync(
                 createNotebookDto,
                 cancellationToken);
@@ -71,6 +90,14 @@ namespace WebApi.Controllers
             [FromBody] UpdateNotebookDto updateNotebookDto,
             CancellationToken cancellationToken)
         {
+            var result = _updateValidator.Validate(updateNotebookDto);
+
+            if (!result.IsValid)
+            {
+                result.AddValidationToModelState(ModelState);
+                return ValidationProblem(ModelState);
+            }
+
             var updatedNotebook = await _notebookService.UpdateNotebookAsync(
                 id, 
                 updateNotebookDto,
@@ -100,32 +127,11 @@ namespace WebApi.Controllers
         }
 
         [HttpDelete("{id:guid}/destroy")]
-        [AllowAnonymous]
         public IActionResult DestroyNotebook(Guid id)
         {
-            //var timeZone = HttpContext.Request.Headers["TimeZone"].ToString();
-            string timeZone = "awdawdawd";
-
-            bool isValid = IsValidTimeZone(timeZone);
-
-            if (!isValid)
-                return BadRequest("Not Valid");
-
-            TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
-
-            var dateUtc = DateTime.UtcNow;
-            var dateWithZone = TimeZoneInfo.ConvertTimeFromUtc(dateUtc, timeZoneInfo);
-
-            var dateNow = dateWithZone.ToString();
-
-            return Ok($"TimeZone from headers: {dateNow}");
+            return BadRequest("Not implemented.");
         }
 
-        private bool IsValidTimeZone(string timeZone)
-        {
-            return TimeZoneInfo.GetSystemTimeZones()
-                .Any(tz => tz.Id == timeZone);
-        }
     }
 }
 

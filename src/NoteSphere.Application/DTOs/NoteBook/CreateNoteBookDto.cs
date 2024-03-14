@@ -8,13 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs.Notebook
 {
-    public record CreateNotebookDto
-    {
-        [Required(ErrorMessage = NotebookErrorValidations.TitleNullOrEmpty)]
-        [MinLength(1, ErrorMessage = NotebookErrorValidations.TitleTooShort)]
-        public string? Title { get; init; }
-
-        [MaxLength(70, ErrorMessage = NotebookErrorValidations.DescriptionMaxLength)]
-        public string? Description { get; init; }
-    }
+    public record CreateNotebookDto(string Title, string Description);
 }

@@ -50,7 +50,7 @@ namespace WebApi.Common
                 Title = HttpStatusHelper
                     .GetTitleByStatusCode(StatusCodes.Status204NoContent),
                 IsSuccess = true,
-                Result = false
+                Result = true
             };
         }
     }

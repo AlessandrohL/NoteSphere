@@ -1,13 +1,12 @@
-﻿
-using WebApi.Helpers;
+﻿using System.Collections;
 
 namespace WebApi.Common
 {
     public class ErrorResponse: Response
     {
-        public List<string> Errors { get; set; }
+        public IEnumerable<string> Errors { get; set; }
 
-        public ErrorResponse(string title, List<string> errors, int statusCode)
+        public ErrorResponse(string title, IEnumerable<string> errors, int statusCode)
         {
             Status = statusCode;
             Title = title;
@@ -20,16 +19,20 @@ namespace WebApi.Common
             Status = statusCode;
             Title = title;
             IsSuccess = false;
-            Errors = new() { error };
+            Errors = new string[] { error };
         }
+    }
 
-        public static ErrorResponse BadRequest(string error)
+    public sealed class ErrorResponseTwo : Response
+    {
+        public Dictionary<string, IEnumerable<string>> Errors { get; init; }
+
+        public ErrorResponseTwo(string title, Dictionary<string, IEnumerable<string>> errorDic, int statusCode)
         {
-            return new ErrorResponse(
-                title: HttpStatusHelper
-                    .GetTitleByStatusCode(StatusCodes.Status400BadRequest),
-                error,
-                StatusCodes.Status400BadRequest);
+            Status = statusCode;
+            Title = title;
+            IsSuccess = false;
+            Errors = errorDic;
         }
     }
 }

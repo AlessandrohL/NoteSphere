@@ -1,5 +1,6 @@
 using Application;
 using Application.Abstractions;
+using Application.Helpers;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -20,18 +21,29 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "NoteSphere", Version = "v1" });
 
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    c.AddSecurityDefinition("JWT_Cookie", new OpenApiSecurityScheme()
     {
-        Name = "Authorization",
+        Name = "accessToken",
         Type = SecuritySchemeType.ApiKey,
         Scheme = JwtBearerDefaults.AuthenticationScheme,
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme."
+        In = ParameterLocation.Cookie,
+        Description = "JWT Authorization cookie using the Bearer scheme."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -57,10 +69,15 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 builder.Services.AddAuthenticationWithJWT(builder.Configuration);
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    //options.AddPolicy("RequireConfirmed", builder =>
+    //{
+    //    builder.RequireClaim(GeneralClaimTypes.Confirmed, new string[] { "true" });
+    //});
+});
 
 builder.Services.AddScoped<UserContextAccessor>();
-
 
 var app = builder.Build();
 
@@ -70,9 +87,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+if (app.Environment.IsProduction())
+{
+    app.UseMiddleware<ExceptionHandlerMiddleware>();
+}
+
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 
