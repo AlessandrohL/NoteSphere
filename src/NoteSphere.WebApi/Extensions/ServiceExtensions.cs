@@ -1,6 +1,9 @@
 ﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WebApi.Constants;
@@ -60,6 +63,22 @@ namespace WebApi.Extensions
             {
                 modelState.AddModelError(error.PropertyName, error.ErrorMessage);               
             }
+        }
+
+        public static NewtonsoftJsonInputFormatter GetJsonPatchInputFormatter()
+        {
+            var builder = new ServiceCollection()
+                .AddLogging()
+                .AddMvc()
+                .AddNewtonsoftJson()
+                .Services.BuildServiceProvider();
+
+            return builder
+                .GetRequiredService<IOptions<MvcOptions>>()
+                .Value
+                .InputFormatters
+                .OfType<NewtonsoftJsonInputFormatter>()
+                .First();
         }
     }
 }

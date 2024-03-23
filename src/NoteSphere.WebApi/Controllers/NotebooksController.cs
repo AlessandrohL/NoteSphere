@@ -1,10 +1,10 @@
 ﻿using Application.Abstractions;
 using Application.DTOs.Notebook;
-using Application.Validators.Notebook;
 using Domain.Filters;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.ActionFilters;
 using WebApi.Common;
@@ -104,6 +104,28 @@ namespace WebApi.Controllers
                 cancellationToken);
 
             return Ok(SuccessResponse<NotebookDto>.Ok(updatedNotebook));
+        }
+
+        [HttpPatch("{id:guid}")]
+        [ValidatePatchDocument<PatchNotebookDto>]
+        public async Task<IActionResult> PatchNotebook(
+            Guid id,
+            [FromBody] JsonPatchDocument<PatchNotebookDto> patchDoc,
+            CancellationToken cancellationToken)
+        {
+            patchDoc.ApplyTo(new PatchNotebookDto(), patchError =>
+            {
+                ModelState.AddModelError("Patch", patchError.ErrorMessage);
+            });
+
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            await _notebookService.PatchNotebookAsync(id, patchDoc, cancellationToken);
+
+            return NoContent();
         }
 
         [HttpDelete("{id:guid}")]

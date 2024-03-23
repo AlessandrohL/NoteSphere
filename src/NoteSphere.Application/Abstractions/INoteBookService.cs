@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.DTOs.Notebook;
 using Domain.Filters;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,10 @@ namespace Application.Abstractions
         Task<NotebookDto?> UpdateNotebookAsync(
             Guid id, 
             UpdateNotebookDto notebookDto,
+            CancellationToken cancellationToken);
+        Task PatchNotebookAsync(
+            Guid id,
+            JsonPatchDocument<PatchNotebookDto> notebookDtoPatchDoc,
             CancellationToken cancellationToken);
         Task SoftDeleteNotebookAsync(Guid id, CancellationToken cancellationToken);
         Task RecoverNotebookAsync(Guid id, CancellationToken cancellationToken);

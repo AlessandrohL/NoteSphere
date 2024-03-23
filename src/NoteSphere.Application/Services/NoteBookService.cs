@@ -1,11 +1,15 @@
 ﻿using Application.Abstractions;
 using Application.DTOs.Notebook;
+using Application.Exceptions;
 using AutoMapper;
 using Domain.Abstractions;
 using Domain.Abstractions.Repositories;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Filters;
+using FluentValidation;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +21,20 @@ namespace Application.Services
     public class NotebookService : INotebookService
     {
         private readonly INotebookRepository _notebookRepository;
+        private readonly IValidator<Notebook> _patchNotebookValidator;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public NotebookService(
             INotebookRepository notebookRepository,
-            IUnitOfWork unitOfWork, 
-            IMapper mapper)
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IValidator<Notebook> patchNotebookValidator)
         {
             _notebookRepository = notebookRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _patchNotebookValidator = patchNotebookValidator;
         }
 
         public async Task<List<NotebookDto>> GetAllNotebooksAsync(
@@ -97,6 +104,52 @@ namespace Application.Services
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<NotebookDto>(notebookDB);
+        }
+
+        public async Task PatchNotebookAsync(
+            Guid id, 
+            JsonPatchDocument<PatchNotebookDto> notebookDtoPatchDoc,
+            CancellationToken cancellationToken)
+        {
+            var existingNotebook = await _notebookRepository.FindNotebookByIdAsync(
+                id,
+                trackChanges: true,
+                cancellationToken);
+
+            if (existingNotebook is null)
+            {
+                throw new NotebookNotFoundException(id);
+            }
+
+            var notebookPatchDocument = new JsonPatchDocument<Notebook>();
+            var patchOperations = notebookDtoPatchDoc
+                .Operations
+                .Select(opr => new Operation<Notebook>
+                {
+                    op = opr.op,
+                    path = opr.path,
+                    value = opr.value
+                });
+
+            notebookPatchDocument.Operations.AddRange(patchOperations);
+            notebookPatchDocument.ContractResolver = notebookDtoPatchDoc.ContractResolver;
+
+            var patchErrors = new List<string>();
+            notebookPatchDocument.ApplyTo(existingNotebook, e => patchErrors.Add(e.ErrorMessage));
+
+            if (patchErrors.Count > 0)
+            {
+                throw new PatchOperationException(patchErrors);
+            }
+
+            var result = _patchNotebookValidator.Validate(existingNotebook);
+
+            if (!result.IsValid)
+            {
+                throw new NotebookValidationException(result.Errors.Select(e => e.ErrorMessage));
+            }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task SoftDeleteNotebookAsync(

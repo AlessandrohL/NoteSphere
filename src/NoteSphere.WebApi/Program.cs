@@ -1,6 +1,5 @@
 using Application;
 using Application.Abstractions;
-using Application.Helpers;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using WebApi.ContextAcessor;
 using WebApi.Extensions;
 using WebApi.Middlewares;
+using WebApi.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +17,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     // options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -60,7 +59,10 @@ builder.Services.AddSwaggerGen(c =>
             Array.Empty<string>()
         }
     });
-});
+
+    c.DocumentFilter<JsonPatchDocumentFilter>();
+})
+    .AddSwaggerGenNewtonsoftSupport();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantProvider, TenantProvider>();
@@ -69,15 +71,15 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 builder.Services.AddAuthenticationWithJWT(builder.Configuration);
-builder.Services.AddAuthorization(options =>
-{
-    //options.AddPolicy("RequireConfirmed", builder =>
-    //{
-    //    builder.RequireClaim(GeneralClaimTypes.Confirmed, new string[] { "true" });
-    //});
-});
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<UserContextAccessor>();
+
+builder.Services.AddControllers(options =>
+{
+    options.InputFormatters.Insert(0, ServiceExtensions.GetJsonPatchInputFormatter());
+});
+
 
 var app = builder.Build();
 
